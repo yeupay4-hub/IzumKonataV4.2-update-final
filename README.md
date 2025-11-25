@@ -96,18 +96,6 @@ Anti-Debug? (Y) Yes | (N) No:
 -> Saved file name: obf-your_script.py
 -> Execution time: 0.00s
 
-## 📊 Obfuscation Workflow
-graph TD
-    A[Original Python Code] --> B[Convert strings-F]
-    B --> C[Built-in Hide]
-    C --> D[String/Int Obfuscation]
-    D --> E[Insert a lot of junk code]
-    E --> F[AST Compilation]
-    F --> G[Marshal Serialization]
-    G --> H[Multi-layer encryption compression]
-    H --> I[Coding in updated language, welding]
-    I --> J[Protected Output File]
-
 ## ⚠️ Important Notice
 
 -> This tool is intended solely for legal code protection purposes. The author is not responsible for any misuse!
