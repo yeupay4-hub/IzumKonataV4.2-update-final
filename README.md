@@ -38,7 +38,7 @@
 
 ## ⚙️ 3. Multi-Layer Compression
 
->> After compiling to bytecode, the code passes through a 4-layer compression chain:
+→ After compiling to bytecode, the code passes through a 4-layer compression chain:
 
 - LZMA
 
@@ -50,51 +50,49 @@
 
 → Result: extremely hard to analyze and nearly unreadable.
 
-🧩 4. Built-in Protection (Hide Builtins)
+## 🧩 4. Built-in Protection (Hide Builtins)
 
 All built-in functions such as eval, exec, print, len, ...
 are protected with anti-hook + anti-debug mechanisms.
 
-🗑 5. Junk Code Injection
+## 🗑 5. Junk Code Injection
 
 Random junk code is inserted into every block.
 
-✨ 6. F-String to Join Conversion
+## ✨ 6. F-String to Join Conversion
 
-Prevents grepping or detection of real content.
+-> Prevents grepping or detection of real content.
 
-🎨 7. Beautiful Banner + CLI
+## 🎨 7. Beautiful Banner + CLI
 
-Uses pystyle to create an attractive command-line interface.
+-> Uses pystyle to create an attractive command-line interface.
 
-🚀 Installation
+## 🚀 Installation
 
 Python 3.6 or later
 
 Module: pystyle (auto install if missing)
 
-📖 Usage
+## 📖 Usage
 
-Run the obfuscator depending on your device:
+-> Run the obfuscator depending on your device:
 
-iOS: python Izu311.py
+-> Android (Termux): python Izu311.py or python Izu312.py
 
-Android (Termux): python Izu311.py or python Izu312.py
+-> Windows CMD / PC: python Izu311.py or python Izu312.py
 
-Windows CMD / PC: python Izu311.py or python Izu312.py
+- Enter the file to encode:
+- Enter File: your_script.py
 
-Enter the file to encode:
-Enter File: your_script.py
+- Enter the username to embed:
+- Enter Your Username! [For example: 'AnhNguyenCoder']:
 
-Enter the username to embed:
-Enter Your Username! [For example: 'AnhNguyenCoder']:
-
-Choose options:
+# Choose options:
 Do you want high security? Yes (Y) | (N) No:
 Anti-Crack? (Y) Yes | (N) No:
 Anti-Debug? (Y) Yes | (N) No:
 
-After encoding:
+# After encoding:
 -> Saved file name: obf-your_script.py
 -> Execution time: 0.00s
 
