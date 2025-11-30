@@ -10,31 +10,31 @@
 
 🔐 1. Obfuscation According to AST
 
->> IzumKonata operates directly on AST (Abstract Syntax Tree), helping:
+-> IzumKonata operates directly on AST (Abstract Syntax Tree), helping:
 
->> Code structure is completely changed
+-> Code structure is completely changed
 
->> Almost impossible to reverse to original form
+-> Almost impossible to reverse to original form
 
->> All strings, ints are encoded through multi-layer lambda
+-> All strings, ints are encoded through multi-layer lambda
 
 ## 🛡 2. Extremely Strong Anti-Debug / Anti-Tamper / Anti-Hook
 
 >> Integrates nearly 70+ security checks, including:
 
->> Do not allow file editing
+-> Do not allow file editing
 
->> Check fixed line number
+-> Check fixed line number
 
->> Check builtins are hooked
+-> Check builtins are hooked
 
->> Check module requests are replaced
+-> Check module requests are replaced
 
->> Prohibit sitecustomize / usercustomize
+-> Prohibit sitecustomize / usercustomize
 
->> Check all method ID & source of class
+-> Check all method ID & source of class
 
->> Check user key & CRC to prevent cracking
+-> Check user key & CRC to prevent cracking
 
 ## ⚙️ 3. Multi-Layer Compression
 
@@ -66,6 +66,21 @@ Random junk code is inserted into every block.
 ## 🎨 7. Beautiful Banner + CLI
 
 -> Uses pystyle to create an attractive command-line interface.
+
+## 📊 Obfuscation Process
+
+```mermaid
+graph TD
+    A[Original Python Code] --> B[F-String Conversion]
+    B --> C[Hidden integration]
+    C --> D[Obfuscator string/integer]
+    D --> E[Junk Code Injection]
+    E --> F[AST Compilation]
+    F --> G[Marshal Serialization]
+    G --> H[Multi-Layer Compression]
+    H --> I[Custom alphanumeric character encoding]
+    I --> J[Protected Output File]
+```
 
 ## 🚀 Installation
 
