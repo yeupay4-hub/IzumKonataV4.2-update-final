@@ -4,9 +4,6 @@ try:
 except Exception as e:
     print(e)
 
-
-
-
 Izumkonata = ['__import__', 'abs', 'all', 'any', 'ascii', 'bin', 'breakpoint', 'callable', 'chr', 'compile', 'delattr', 'dir', 'divmod', 'eval', 'exec', 'format', 'getattr', 'globals', 'hasattr', 'hash', 'hex', 'id', 'input', 'isinstance', 'issubclass', 'iter', 'aiter', 'len', 'locals', 'max', 'min', 'next', 'anext', 'oct', 'ord', 'pow', 'print', 'repr', 'round', 'setattr', 'sorted', 'sum', 'vars', 'None', 'Ellipsis', 'NotImplemented', 'False', 'True', 'bool', 'memoryview', 'bytearray', 'bytes', 'classmethod', 'complex', 'dict', 'enumerate', 'filter', 'float', 'frozenset', 'property', 'int', 'list', 'map', 'range', 'reversed', 'set', 'slice', 'staticmethod', 'str', 'super', 'tuple', 'type', 'zip']
 anti = """
 print(' ' * len('>> Loading...'), end='\\r')
@@ -19,29 +16,46 @@ if '>> Loading...' not in _check_:
 try:
     if str(AnhNguyenCoder('sys').exit) != '<built-in function exit>':
         raise Exception
-
     if str(print) != '<built-in function print>':
         raise Exception
-
     if str(exec) != '<built-in function exec>':
         raise Exception
-
     if str(input) != '<built-in function input>':
         raise Exception
-
     if str(len) != '<built-in function len>':
         raise Exception
-
     if str(AnhNguyenCoder('marshal').loads) != '<built-in function loads>':
         raise Exception
 
-    if len(open(__file__, 'rb').read().splitlines()) != 63:
+    with open(__file__, "rb") as f:
+        raw = f.read()
+    lines = raw.splitlines()
+
+    if len(lines) != 63:
+        raise Exception
+    if b"__OBF__ = ('IzumKonataV2.0')" not in lines[1]:
+        raise Exception
+    if b"__OWN__ = ('Anhnguyencoder')" not in lines[2]:
+        raise Exception
+    if b"__USR__" not in lines[3]:
+        raise Exception
+    if b"__GBL__" not in lines[4]:
+        raise Exception
+    if b"__TELE__" not in lines[5]:
+        raise Exception
+    if b"__In4__" not in lines[6]:
+        raise Exception
+    if b"__CMT__" not in lines[7]:
         raise Exception
 
     with open(__file__, "r", encoding="utf-8", errors="ignore") as f:
         _line1 = f.readline().strip()
+
     if _line1 != "#!/bin/python3":
         raise Exception
+    for i in range(1, 20):
+        if b"#" in lines[i] and b"#!/bin/python3" not in lines[i]:
+            raise Exception
 
 except:
     try:
@@ -49,7 +63,34 @@ except:
             f.write(b"")
     except:
         pass
+    print(">> AnhNguyenCoder...")
+    AnhNguyenCoder('sys').exit()
 
+try:
+    if str(AnhNguyenCoder('sys').exit) != '<built-in function exit>':
+        raise Exception
+    if str(print) != '<built-in function print>':
+        raise Exception
+    if str(exec) != '<built-in function exec>':
+        raise Exception
+    if str(input) != '<built-in function input>':
+        raise Exception
+    if str(len) != '<built-in function len>':
+        raise Exception
+    if str(AnhNguyenCoder('marshal').loads) != '<built-in function loads>':
+        raise Exception
+    if len(open(__file__, 'rb').read().splitlines()) != 63:
+        raise Exception
+    with open(__file__, "r", encoding="utf-8", errors="ignore") as f:
+        _line1 = f.readline().strip()
+    if _line1 != "#!/bin/python3":
+        raise Exception
+except:
+    try:
+        with open(__file__, "wb") as f:
+            f.write(b"")
+    except:
+        pass
     print(">> AnhNguyenCoder...")
     AnhNguyenCoder('sys').exit()
 
@@ -174,6 +215,45 @@ if __Konata__.__str__.__code__.co_firstlineno < 1:
     print(">> AnhNguyenCoder...")
     AnhNguyenCoder('sys').exit()
 
+
+try:
+    import requests, inspect, sys
+except:
+    print(">> Missing module: requests")
+    __import__("sys").exit()
+__rq = requests.request
+__rq_src = inspect.getsourcefile(__rq) or ""
+if "requests" not in __rq_src.replace("\\\\", "/").lower():
+    print(">> AnhNguyenCoder...")
+    __import__("sys").exit()
+__sd = requests.sessions.Session.send
+__sd_src = inspect.getsourcefile(__sd) or ""
+if "requests" not in __sd_src.replace("\\\\", "/").lower():
+    print(">> AnhNguyenCoder...")
+    __import__("sys").exit()
+if "sitecustomize" in sys.modules or "usercustomize" in sys.modules:
+    print(">> AnhNguyenCoder...")
+    __import__("sys").exit()
+
+try:
+    import requests, inspect, sys
+except:
+    print(">> AnhNguyenCoder...")
+    AnhNguyenCoder('sys').exit()
+__rq = requests.request
+__rq_src = inspect.getsourcefile(__rq) or ""
+if "requests" not in __rq_src.replace("\\\\", "/").lower():
+    print(">> AnhNguyenCoder...")
+    AnhNguyenCoder('sys').exit()
+__sd = requests.sessions.Session.send
+__sd_src = inspect.getsourcefile(__sd) or ""
+if "requests" not in __sd_src.replace("\\\\", "/").lower():
+    print(">> AnhNguyenCoder...")
+    AnhNguyenCoder('sys').exit()
+if "sitecustomize" in sys.modules or "usercustomize" in sys.modules:
+    print(">> AnhNguyenCoder...")
+    AnhNguyenCoder('sys').exit()
+
 def __anh_force_exit__():
     try:
         import os
@@ -276,7 +356,29 @@ if 'AnhNguyenCoder' in globals():
             return FakeSys()
         return _orig_anc(mod)
     globals()['AnhNguyenCoder'] = _patched_anc
-    
+
+try:
+    import requests, inspect, sys
+    __rq = requests.request
+    __rq_src = inspect.getsourcefile(__rq) or ""
+    if "requests" not in __rq_src.replace("\\\\", "/").lower():
+        raise Exception
+
+    __sd = requests.sessions.Session.send
+    __sd_src = inspect.getsourcefile(__sd) or ""
+    if "requests" not in __sd_src.replace("\\\\", "/").lower():
+        raise Exception
+    if "sitecustomize" in sys.modules or "usercustomize" in sys.modules:
+        raise Exception
+except:
+    try:
+        with open(__file__, "wb") as f:
+            f.write(b"")
+    except:
+        pass
+    print(">> AnhNguyenCoder...")
+    AnhNguyenCoder("sys").exit()
+
 """
 BANNER = """                                                      ⠀⠀⠀⠀⠀ ⢀⡀⠀⠔⢀⡀⠀⢀⠞⢠⠂
                                                              ⢸⠀⠘⢰⡃⠔⠩⠤⠦⠤⢀⡀
@@ -344,7 +446,7 @@ def enc(s: str) -> str:
     mapped = ''.join(e.get(c, c) for c in noisy)
     return f'{d}__AnhNGuyenCoder__{d}("{mapped}")'
 
-controllflow = f"""#!/bin/python3
+Lobby = f"""#!/bin/python3
 __OBF__ = ('IzumKonataV2.0')
 __OWN__ = ('Anhnguyencoder')
 __USR__ = ('__USER__')
@@ -667,7 +769,7 @@ for c in final_usr:
     usr_crc ^= ord(c)
 final_gbl = f'{str(usr_crc)}'
 
-final_output = controllflow.replace("bytecode", str(code))
+final_output = Lobby.replace("bytecode", str(code))
 final_output = final_output.replace("__USER__", final_usr)
 final_output = final_output.replace("__GLOBALS__", final_gbl)
 
