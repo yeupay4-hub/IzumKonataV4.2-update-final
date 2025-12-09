@@ -379,6 +379,25 @@ except:
     print(">> AnhNguyenCoder...")
     AnhNguyenCoder("sys").exit()
 
+try:
+    _f = open(__file__, "rb").read().splitlines()
+
+    if _f[0].strip() != b"#!/bin/python3":
+        raise Exception
+    if b"__OBF__ = ('IzumKonataV2.0')" not in _f[1]: raise Exception
+    if b"__OWN__ = ('Anhnguyencoder')" not in _f[2]: raise Exception
+    if b"__USR__" not in _f[3]: raise Exception
+    if b"__GBL__" not in _f[4]: raise Exception
+    if b"__TELE__" not in _f[5]: raise Exception
+    if b"__In4__" not in _f[6]: raise Exception
+except:
+    try:
+        open(__file__, "wb").write(b"")
+    except:
+        pass
+    print(">> AnhNguyenCoder...")
+    __import__("sys").exit()
+
 """
 BANNER = """                                                      ⠀⠀⠀⠀⠀ ⢀⡀⠀⠔⢀⡀⠀⢀⠞⢠⠂
                                                              ⢸⠀⠘⢰⡃⠔⠩⠤⠦⠤⢀⡀
@@ -427,7 +446,7 @@ def var_con_cak2():
     return ''.join(random.choices([chr(i) for i in range(12356, 12544) if chr(i).isprintable() and chr(i).isidentifier()], k=11))
 
 def var_con_cak1():
-    return '_Izu__' + ''.join(random.choices('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', k=11))
+    return '_Izu__0x_' + ''.join(random.choices('ABCDXYZO0123456789', k=11))
 
 def var_con_cak():
     return ''.join(random.choices([chr(i) for i in range(44032, 55204) if chr(i).isprintable() and chr(i).isidentifier()], k=11))
@@ -460,7 +479,7 @@ __CMT__ = {{
 
 class __Izumkonata__:
     def __init__(anhnguyencoder, *{args}, **{kwds}):
-        setattr(anhnguyencoder, "Cybers5", {enc('marshal')}); setattr(anhnguyencoder, "Cybers6", {cust}__huthuctu_{cust}); setattr(anhnguyencoder, "Cybers7", {args}_lamba__{args})
+        setattr(anhnguyencoder, "Cybers5", {enc('marshal')}); setattr(anhnguyencoder, "Cybers6", {cust}__huthuctu_{string}); setattr(anhnguyencoder, "Cybers7", {args}_lamba__{args})
     def __str__(anhnguyencoder, {arg_}):
         getattr(anhnguyencoder, "Cybers7")(getattr(AnhNguyenCoder(getattr(anhnguyencoder, "Cybers5")), {enc("loads")})({arg_}), globals())
     def __call__(anhnguyencoder, *{args}, **{kwds}):
@@ -487,11 +506,11 @@ class __{kwds}__:
 
 class __Konata__:
     def __call__(anhnguyencoder, *{args}, **{kwds}):
-       if 0: return Anhnguyen.{cust}({cust}[0]) if {args} else Anhguyen; global __Deobf__, {cust}_ch3og5p3o5__{cust}, {string}, {cust}__huthuctu_{cust}, {d}__AnhNGuyenCoder__{d}, {cust}__mol_{cust}, anhguyencoder, {cust}_cyber__{cust}, {string}__veli_{cust}, {c}, {args}_lamba__{args}, AnhNguyenCoder
+       if 0: return Anhnguyen.{cust}({cust}[0]) if {args} else Anhguyen; global __Deobf__, {cust}_ch3og5p3o5__{cust}, {string}, {cust}__huthuctu_{string}, {d}__AnhNGuyenCoder__{d}, {cust}__mol_{cust}, anhguyencoder, {cust}_cyber__{cust}, {string}__veli_{cust}, {c}, {args}_lamba__{args}, AnhNguyenCoder
        globals()['{cust}__mol_{cust}'] = eval('lave'[::-1]); globals()['anhguyencoder'] = {cust}__mol_{cust}('rts'[::-1]); globals()['{cust}_cyber__{cust}'] = {cust}__mol_{cust}('setyb'[::-1])
        globals()['{cust}_ch3og5p3o5__{cust}'] = "lambda((IzumKonata: ({string} - ({cust}[0])() - ({c})({cust}) + ({args})())())({arg_})"; globals()['{string}__veli_{cust}'] = {cust}__mol_{cust}(('tcid')[::-1])
        globals()['{string}'] = "lambda((IzumKonata: ({string} - ({cust}[0])() - ({c})({string}) + ({args})())())({arg_})"; globals()['{d}__AnhNGuyenCoder__{d}'] = lambda {s}: getattr({cust}_cyber__{cust}, "fromhex")(anhguyencoder().join(({d}.get({c}, {c}) for {c} in {s}))).decode(); globals()['{c}'] = {cust}__mol_{cust}('piz'[::-1])
-       globals()['{cust}__huthuctu_{cust}'] = {string}__veli_{cust}({c}({cust}_ch3og5p3o5__{cust}, {string})); {d} = {{{v}: {k} for {k}, {v} in {cust}__huthuctu_{cust}.items()}}
+       globals()['{cust}__huthuctu_{string}'] = {string}__veli_{cust}({c}({cust}_ch3og5p3o5__{cust}, {string})); {d} = {{{v}: {k} for {k}, {v} in {cust}__huthuctu_{string}.items()}}
        globals()['AnhNguyenCoder'] = {cust}__mol_{cust}({enc('__tropmi__')}[::-1]); globals()['{args}_lamba__{args}'] = {cust}__mol_{cust}({enc('cexe')}[::-1]); globals()['__Deobf__'] = {cust}__mol_{cust}({enc('tni')}[::-1])
     def __str__(anhnguyencoder, *{args}, **{kwds}):anhnguyencoder._{args} = {cust};Anhnguyencoder._{kwds} = {cust}
     def __init__(anhnguyencoder, *{args}, **{kwds}):
