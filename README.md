@@ -25,7 +25,7 @@
 
 ## 🛡 2. Extremely Strong Anti-Debug / Anti-Tamper / Anti-Hook
 
->> Integrates nearly 70+ security checks, including:
+→ Integrates nearly 70+ security checks, including:
 
 -> Do not allow file editing
 
