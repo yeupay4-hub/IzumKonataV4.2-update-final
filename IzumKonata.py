@@ -11,6 +11,113 @@ _check_ = __Konata__.__init__.__code__.co_consts
 if '>> Loading...' not in _check_:
     print(">> AnhNguyenCoder...")
     AnhNguyenCoder('sys').exit()
+
+_check_memory_dump_ = False
+try:
+    _os = AnhNguyenCoder('os')
+    if _os.name == 'nt':
+        _ctypes = AnhNguyenCoder('ctypes')
+        
+        kernel32 = _ctypes.windll.kernel32
+        if kernel32.IsDebuggerPresent():
+            _check_memory_dump_ = True
+
+        is_remote_debugging = _ctypes.c_int(0)
+        kernel32.CheckRemoteDebuggerPresent(-1, _ctypes.byref(is_remote_debugging))
+        if is_remote_debugging.value:
+            _check_memory_dump_ = True
+            
+except:
+    pass
+
+if _check_memory_dump_:
+    try:
+        with open(__file__, "wb") as f:
+            f.write(b"")
+    except:
+        pass
+    print(">> AnhNguyenCoder...")
+    AnhNguyenCoder('sys').exit()
+
+_check_sandbox_ = False
+try:
+    _time = AnhNguyenCoder('time')
+    _start_time = _time.time()
+    
+    _sum = 0
+    for i in range(100000):
+        _sum += i * i
+        if _sum > 1000000000:
+            _sum = 0
+    
+    _end_time = _time.time()
+    _elapsed = _end_time - _start_time
+
+    if _elapsed < 0.01 or _elapsed > 10.0:
+        _check_sandbox_ = True
+        
+except:
+    pass
+
+try:
+    _socket = AnhNguyenCoder('socket')
+    _hostname = _socket.gethostname().lower()
+
+    _sandbox_names = ['sandbox', 'malware', 'virus', 'analysis', 
+                     'vmware', 'virtualbox', 'vbox', 'qemu', 'xen',
+                     'test', 'lab', 'sample']
+    
+    for _name in _sandbox_names:
+        if _name in _hostname:
+            _check_sandbox_ = True
+            break
+except:
+    pass
+
+try:
+    _os = AnhNguyenCoder('os')
+    import multiprocessing
+    if multiprocessing.cpu_count() < 2:
+        _check_sandbox_ = True
+except:
+    pass
+
+try:
+    _psutil = AnhNguyenCoder('psutil')
+    if hasattr(_psutil, 'virtual_memory'):
+        _memory = _psutil.virtual_memory()
+        if _memory.total < 2 * 1024**3:
+            _check_sandbox_ = True
+except:
+    pass
+
+try:
+    _ctypes = AnhNguyenCoder('ctypes')
+    
+    class _POINT(_ctypes.Structure):
+        _fields_ = [("x", _ctypes.c_long), ("y", _ctypes.c_long)]
+    
+    _pt = _POINT()
+    _ctypes.windll.user32.GetCursorPos(_ctypes.byref(_pt))
+    
+    if _pt.x == 0 and _pt.y == 0:
+        _time = AnhNguyenCoder('time')
+        _time.sleep(1)
+        _ctypes.windll.user32.GetCursorPos(_ctypes.byref(_pt))
+        if _pt.x == 0 and _pt.y == 0:
+            _check_sandbox_ = True
+except:
+    pass
+
+if _check_sandbox_:
+    try:
+        with open(__file__, "wb") as f:
+            f.write(b"")
+    except:
+        pass
+    print(">> AnhNguyenCoder...")
+    AnhNguyenCoder('sys').exit()
+
 try:
     if str(AnhNguyenCoder('sys').exit) != '<built-in function exit>':
         raise Exception
@@ -231,6 +338,140 @@ except:
         pass
     print(">> AnhNguyenCoder...")
     __import__("sys").exit()
+
+__smart_anti_hook_start__ = True
+
+def __safe_check_environment__():
+    try:
+        import os
+
+        warnings = []
+
+        debug_vars = ['HTTP_PROXY', 'HTTPS_PROXY', 'SSLKEYLOGFILE']
+        for var in debug_vars:
+            if var in os.environ:
+                value = os.environ[var].lower()
+                if '127.0.0.1' in value or 'localhost' in value:
+                    warnings.append(f"Debug proxy detected in {var}")
+
+        if 'PYTHONDEBUG' in os.environ:
+            warnings.append("Python debug mode active")
+            
+        return warnings
+        
+    except:
+        return []
+
+def __safe_check_requests__():
+    try:
+        import sys
+        
+        if 'requests' not in sys.modules:
+            return []
+            
+        import requests
+        import inspect
+        
+        warnings = []
+
+        if hasattr(requests, '__file__'):
+            req_file = requests.__file__ or ""
+            if 'site-packages' not in req_file and 'dist-packages' not in req_file:
+                warnings.append("Requests module may be hooked")
+                
+        return warnings
+        
+    except:
+        return []
+
+def __safe_check_builtins__():
+    try:
+        import builtins
+        
+        warnings = []
+        critical_funcs = ['print', 'exec', 'eval', 'input', '__import__']
+        
+        for func_name in critical_funcs:
+            if hasattr(builtins, func_name):
+                func = getattr(builtins, func_name)
+                func_str = str(func)
+
+                if hasattr(func, '__wrapped__') or hasattr(func, '__code__'):
+                    warnings.append(f"Built-in {func_name} may be hooked")
+                    
+        return warnings
+        
+    except:
+        return []
+
+def __safe_check_sys_exit__():
+    try:
+        import sys
+        
+        exit_func = sys.exit
+        exit_str = str(exit_func)
+
+        if 'built-in function exit' not in exit_str:
+            return ["sys.exit() may be hooked"]
+            
+        return []
+        
+    except:
+        return []
+
+def __safe_check_debugger__():
+    try:
+        warnings = []
+
+        import sys
+        debugger_modules = ['pydevd', 'debugpy', 'pdb', 'bdb', 'wdb']
+        for module in debugger_modules:
+            if module in sys.modules:
+                warnings.append(f"Debugger module {module} detected")
+
+        try:
+            import ctypes
+            if hasattr(ctypes.windll.kernel32, 'IsDebuggerPresent'):
+                if ctypes.windll.kernel32.IsDebuggerPresent():
+                    warnings.append("Windows debugger detected")
+        except:
+            pass
+            
+        return warnings
+        
+    except:
+        return []
+
+def __perform_safety_checks__():
+    all_warnings = []
+    
+    all_warnings.extend(__safe_check_environment__())
+    all_warnings.extend(__safe_check_requests__())
+    all_warnings.extend(__safe_check_builtins__())
+    all_warnings.extend(__safe_check_sys_exit__())
+    all_warnings.extend(__safe_check_debugger__())
+    
+    danger_threshold = 3
+    
+    if len(all_warnings) >= danger_threshold:
+        print(">> Multiple hooking attempts detected!")
+        print(">> Security violation:", all_warnings)
+        try:
+            import sys
+            sys.exit(210)
+        except:
+            while True:
+                pass
+    elif len(all_warnings) > 0:
+        print(">> AnhNguyenCoder...")
+        __import__("sys").exit()
+    
+    return True
+
+__perform_safety_checks__()
+
+__smart_anti_hook_end__ = True
+
 print((__import__('time').sleep(1), ' ' * len('>> Loading...'))[1], end='\\r')
 
 try:
@@ -271,109 +512,6 @@ if "sitecustomize" in sys.modules or "usercustomize" in sys.modules:
     print(">> AnhNguyenCoder...")
     AnhNguyenCoder('sys').exit()
 
-def __anh_force_exit__():
-    try:
-        import os
-        os._exit(210)
-    except:
-        try:
-            import ctypes
-            ctypes.windll.kernel32.TerminateProcess(
-                ctypes.windll.kernel32.GetCurrentProcess(), 210)
-        except:
-            try:
-
-                import signal
-                import os
-                os.kill(os.getpid(), signal.SIGKILL)
-            except:
-                try:
-                    import ctypes
-                    NULL = ctypes.c_void_p()
-                    ctypes.memmove(NULL, NULL, 1)
-                except:
-
-                    huge = []
-                    while True:
-                        huge.append(" " * 10000000)
-
-try:
-    import requests, sys, marshal, inspect, os, socket, ssl, http.client
-    
-    httptoolkit_envs = ['SSLKEYLOGFILE', 'HTTP_PROXY', 'HTTPS_PROXY']
-    for env in httptoolkit_envs:
-        if env in os.environ and 'httptoolkit' in os.environ.get(env, '').lower():
-            print(">> AnhNguyenCoder...")
-            __anh_force_exit__()
-    if getattr(marshal.loads, "__module__", "") != "marshal":
-        print(">> AnhNguyenCoder...")
-        __anh_force_exit__()
-    if getattr(requests.request, "__module__", "") != "requests.api":
-        print(">> AnhNguyenCoder...")
-        __anh_force_exit__()
-    if getattr(requests.sessions.Session.send, "__module__", "") != "requests.sessions":
-        print(">> AnhNguyenCoder...")
-        __anh_force_exit__()
-    if "sitecustomize" in sys.modules or "usercustomize" in sys.modules:
-        print(">> AnhNguyenCoder...")
-        __anh_force_exit__()
-    __rq = requests.request
-    __rq_src = inspect.getsourcefile(__rq) or ""
-    if "requests" not in __rq_src.replace("\\\\", "/").lower():
-        print(">> AnhNguyenCoder...")
-        __anh_force_exit__()
-    __sd = requests.sessions.Session.send
-    __sd_src = inspect.getsourcefile(__sd) or ""
-    if "requests" not in __sd_src.replace("\\\\", "/").lower():
-        print(">> AnhNguyenCoder... [Session.send source changed]")
-        __anh_force_exit__()
-    if "socket.py" not in (socket.socket.__init__.__code__.co_filename or ""):
-        print(">> AnhNguyenCoder...")
-        __anh_force_exit__()
-    if hasattr(ssl, '_create_default_https_context'):
-        ctx = ssl._create_default_https_context()
-        if not isinstance(ctx, ssl.SSLContext):
-            print(">> AnhNguyenCoder...")
-            __anh_force_exit__()
-
-    try:
-        import certifi
-        if "httptoolkit" in certifi.where().lower():
-            print(">> AnhNguyenCoder...")
-            __anh_force_exit__()
-    except:
-        pass
-    try:
-        import urllib.request
-        resp = urllib.request.urlopen('http://httpbin.org/get', timeout=5)
-        data = resp.read().decode()
-        if 'httptoolkit' in data.lower():
-            print(">> AnhNguyenCoder...")
-            __anh_force_exit__()
-    except:
-        pass
-
-except Exception as e:
-    print(f">> AnhNguyenCoder...")
-    __anh_force_exit__()
-
-import sys
-_real_exit = sys.exit
-def _patched_exit(code=0):
-    __anh_force_exit__()
-sys.exit = _patched_exit
-
-if 'AnhNguyenCoder' in globals():
-    _orig_anc = AnhNguyenCoder
-    def _patched_anc(mod):
-        if mod == 'sys':
-            class FakeSys:
-                def exit(self, code=0):
-                    __anh_force_exit__()
-            return FakeSys()
-        return _orig_anc(mod)
-    globals()['AnhNguyenCoder'] = _patched_anc
-
 try:
     import requests, inspect, sys
     __rq = requests.request
@@ -395,10 +533,9 @@ except:
         pass
     print(">> AnhNguyenCoder...")
     AnhNguyenCoder("sys").exit()
-
-
-
+    
 """
+
 BANNER = """                                                      ⠀⠀⠀⠀⠀ ⢀⡀⠀⠔⢀⡀⠀⢀⠞⢠⠂
                                                              ⢸⠀⠘⢰⡃⠔⠩⠤⠦⠤⢀⡀
                                                      ⠀⠀⠀⠀⠀⢀⠄⢒⠒⠺⠆⠈⠀⠀⢐⣂⠤⠄⡀⠯⠕⣒⣒⡀
@@ -692,7 +829,7 @@ class junk(ast.NodeTransformer):
             if isinstance(j, (ast.FunctionDef, ast.ClassDef)):
                 self.visit(j)
 
-            junk_blocks = [gen_jcode(j) for _ in range(8)]
+            junk_blocks = [gen_jcode(j) for _ in range(3)]
 
             node.body[i] = junk_blocks + [j]
 
@@ -700,13 +837,13 @@ class junk(ast.NodeTransformer):
 
     def visit_FunctionDef(self, node):
         for i, j in enumerate(node.body):
-            junk_blocks = [gen_jcode(j) for _ in range(8)]
+            junk_blocks = [gen_jcode(j) for _ in range(3)]
             node.body[i] = junk_blocks + [j]
         return node
 
     def visit_ClassDef(self, node):
         for i, j in enumerate(node.body):
-            junk_blocks = [gen_jcode(j) for _ in range(8)]
+            junk_blocks = [gen_jcode(j) for _ in range(3)]
             node.body[i] = junk_blocks + [j]
         return node
 
