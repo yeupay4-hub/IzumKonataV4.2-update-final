@@ -339,6 +339,8 @@ except:
     print(">> AnhNguyenCoder...")
     __import__("sys").exit()
 
+
+
 __smart_anti_hook_start__ = True
 
 def __safe_check_environment__():
@@ -469,7 +471,6 @@ def __perform_safety_checks__():
     return True
 
 __perform_safety_checks__()
-
 __smart_anti_hook_end__ = True
 
 print((__import__('time').sleep(1), ' ' * len('>> Loading...'))[1], end='\\r')
@@ -815,11 +816,181 @@ class obf(ast.NodeTransformer):
             node = obfint(node.value)
         return node
 
+from ast import *
+
 def gen_jcode(code):
     men = var_con_cak()
     anhnguyencoder = var_con_cak()
     izumkonata = var_con_cak()
-    return [Assign(targets=[Name(id=anhnguyencoder, ctx=Store())], value=Constant(value=men), lineno=0), Assign(targets=[Name(id=izumkonata, ctx=Store())], value=Constant(value=True), lineno=0), If(test=BoolOp(op=And(), values=[Compare(left=Name(id=anhnguyencoder, ctx=Load()), ops=[Eq()], comparators=[Constant(value=men)]), Compare(left=Name(id=izumkonata, ctx=Load()), ops=[NotEq()], comparators=[Constant(value=True)])]), body=[Expr(value=Lambda(args=arguments(posonlyargs=[], args=[], kwonlyargs=[], kw_defaults=[], defaults=[]), body=Constant(value='dec cai mau lol')))], orelse=[If(test=BoolOp(op=And(), values=[Compare(left=Name(id=anhnguyencoder, ctx=Load()), ops=[Eq()], comparators=[Constant(value=men)]), Compare(left=Name(id=izumkonata, ctx=Load()), ops=[NotEq()], comparators=[Constant(value=False)])]), body=[Try(body=[Expr(value=Tuple(elts=[BinOp(left=Constant(value=1), op=Div(), right=Constant(value=0)), BinOp(left=Constant(value=123), op=Div(), right=Constant(value=0)), BinOp(left=Constant(value=12312321312), op=Div(), right=Constant(value=0))], ctx=Load()))], handlers=[ExceptHandler(body=[Pass()])], orelse=[], finalbody=[])], orelse=[If(test=BoolOp(op=Or(), values=[Compare(left=Name(id=anhnguyencoder, ctx=Load()), ops=[Eq()], comparators=[Constant(value='izu')]), Compare(left=Name(id=izumkonata, ctx=Load()), ops=[Eq()], comparators=[Constant(value=False)])]), body=[Expr(value=Call(func=Lambda(args=arguments(posonlyargs=[], args=[], kwonlyargs=[], kw_defaults=[], defaults=[]), body=Call(func=Name(id='print', ctx=Load()), args=[Constant(value='bietdepzairoi')], keywords=[])), args=[], keywords=[]))], orelse=[While(test=Constant(value=True), body=[Pass()], orelse=[]), Expr(value=Call(func=Name(id='print', ctx=Load()), args=[Constant(value='deccailolnhamay')], keywords=[]))])])])]
+
+    return [
+        Assign(
+            targets=[Name(id=anhnguyencoder, ctx=Store(), lineno=1, col_offset=0)],
+            value=Constant(value=men, lineno=1, col_offset=0),
+            lineno=1,
+            col_offset=0
+        ),
+
+        Assign(
+            targets=[Name(id=izumkonata, ctx=Store(), lineno=2, col_offset=0)],
+            value=Constant(value=True, lineno=2, col_offset=0),
+            lineno=2,
+            col_offset=0
+        ),
+
+        If(
+            test=BoolOp(
+                op=And(),
+                values=[
+                    Compare(
+                        left=Name(id=anhnguyencoder, ctx=Load(), lineno=3, col_offset=0),
+                        ops=[Eq()],
+                        comparators=[Constant(value=men, lineno=3, col_offset=0)]
+                    ),
+                    Compare(
+                        left=Name(id=izumkonata, ctx=Load(), lineno=3, col_offset=0),
+                        ops=[NotEq()],
+                        comparators=[Constant(value=True, lineno=3, col_offset=0)]
+                    )
+                ]
+            ),
+            body=[
+                Expr(
+                    value=Lambda(
+                        args=arguments(
+                            posonlyargs=[],
+                            args=[],
+                            vararg=None,
+                            kwonlyargs=[],
+                            kw_defaults=[],
+                            kwarg=None,
+                            defaults=[]
+                        ),
+                        body=Constant(value="dec cai mau lol", lineno=4, col_offset=0)
+                    ),
+                    lineno=4,
+                    col_offset=4
+                )
+            ],
+            orelse=[
+                If(
+                    test=BoolOp(
+                        op=And(),
+                        values=[
+                            Compare(
+                                left=Name(id=anhnguyencoder, ctx=Load(), lineno=5, col_offset=0),
+                                ops=[Eq()],
+                                comparators=[Constant(value=men, lineno=5, col_offset=0)]
+                            ),
+                            Compare(
+                                left=Name(id=izumkonata, ctx=Load(), lineno=5, col_offset=0),
+                                ops=[NotEq()],
+                                comparators=[Constant(value=False, lineno=5, col_offset=0)]
+                            )
+                        ]
+                    ),
+                    body=[
+                        Try(
+                            body=[
+                                Expr(
+                                    value=Tuple(
+                                        elts=[
+                                            BinOp(Constant(1), Div(), Constant(0)),
+                                            BinOp(Constant(123), Div(), Constant(0)),
+                                            BinOp(Constant(12312321312), Div(), Constant(0))
+                                        ],
+                                        ctx=Load()
+                                    ),
+                                    lineno=6,
+                                    col_offset=8
+                                )
+                            ],
+                            handlers=[
+                                ExceptHandler(
+                                    type=None,
+                                    name=None,
+                                    body=[Pass(lineno=7, col_offset=8)]
+                                )
+                            ],
+                            orelse=[],
+                            finalbody=[],
+                            lineno=6,
+                            col_offset=4
+                        )
+                    ],
+                    orelse=[
+                        If(
+                            test=BoolOp(
+                                op=Or(),
+                                values=[
+                                    Compare(
+                                        left=Name(id=anhnguyencoder, ctx=Load(), lineno=8, col_offset=0),
+                                        ops=[Eq()],
+                                        comparators=[Constant(value="izu", lineno=8, col_offset=0)]
+                                    ),
+                                    Compare(
+                                        left=Name(id=izumkonata, ctx=Load(), lineno=8, col_offset=0),
+                                        ops=[Eq()],
+                                        comparators=[Constant(value=False, lineno=8, col_offset=0)]
+                                    )
+                                ]
+                            ),
+                            body=[
+                                Expr(
+                                    value=Call(
+                                        func=Lambda(
+                                            args=arguments(
+                                                posonlyargs=[],
+                                                args=[],
+                                                vararg=None,
+                                                kwonlyargs=[],
+                                                kw_defaults=[],
+                                                kwarg=None,
+                                                defaults=[]
+                                            ),
+                                            body=Call(
+                                                func=Name(id="print", ctx=Load(), lineno=9, col_offset=0),
+                                                args=[Constant(value="bietdepzairoi", lineno=9, col_offset=0)],
+                                                keywords=[]
+                                            )
+                                        ),
+                                        args=[],
+                                        keywords=[]
+                                    ),
+                                    lineno=9,
+                                    col_offset=4
+                                )
+                            ],
+                            orelse=[
+                                While(
+                                    test=Constant(value=True, lineno=10, col_offset=0),
+                                    body=[Pass(lineno=10, col_offset=8)],
+                                    orelse=[],
+                                    lineno=10,
+                                    col_offset=4
+                                ),
+                                Expr(
+                                    value=Call(
+                                        func=Name(id="print", ctx=Load(), lineno=11, col_offset=0),
+                                        args=[Constant(value="deccailolnhamay", lineno=11, col_offset=0)],
+                                        keywords=[]
+                                    ),
+                                    lineno=11,
+                                    col_offset=4
+                                )
+                            ],
+                            lineno=8,
+                            col_offset=0
+                        )
+                    ],
+                    lineno=5,
+                    col_offset=0
+                )
+            ],
+            lineno=3,
+            col_offset=0
+        )
+    ]
 
 class junk(ast.NodeTransformer):
 
