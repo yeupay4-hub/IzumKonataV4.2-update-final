@@ -687,23 +687,23 @@ cust = ''.join(random.sample(
 e = dict(zip(string, cust))
 d = {v: k for k, v in e.items()}
 
-def var_con_cak2():
+def rb2():
     return ''.join(random.choices([chr(i) for i in range(12356, 12544) if chr(i).isprintable() and chr(i).isidentifier()], k=11))
 
-def var_con_cak1():
-    return '_Izu__0x_' + ''.join(random.choices('ABCDXYZO0123456789', k=11))
+def rb1():
+    return '_Izu__0x_' + ''.join(__import__("random").sample([str(i) for i in range(1, 20)], k=4))
 
-def var_con_cak():
+def rb():
     return ''.join(random.choices([chr(i) for i in range(44032, 55204) if chr(i).isprintable() and chr(i).isidentifier()], k=11))
 
-v = var_con_cak()
-args = var_con_cak()
-kwds = var_con_cak()
-d = var_con_cak2()
-k = var_con_cak1()
-c = var_con_cak2()
-arg_ = var_con_cak()
-s = var_con_cak1()
+v = rb2()
+args = rb()
+kwds = rb()
+d = rb2()
+k = rb1()
+c = rb1()
+arg_ = rb()
+s = rb1()
 
 def enc(s: str) -> str:
     noisy = s.encode().hex()                
@@ -786,9 +786,9 @@ def _args(name):
     )
 
 def obfstr(s):
-    lst=[ord(i) for i in s]; v=var_con_cak()
+    lst=[ord(i) for i in s]; v=rb()
     lam3=ast.Lambda(
-        args=_args(var_con_cak()),
+        args=_args(rb()),
         body=ast.Call(
             func=ast.Attribute(
                 value=ast.Call(ast.Name('anhguyencoder',ast.Load()),[],[]),
@@ -805,9 +805,9 @@ def obfstr(s):
             keywords=[]
         )
     )
-    lam2=ast.Lambda(_args(var_con_cak()),
+    lam2=ast.Lambda(_args(rb()),
         ast.Call(lam3,[ast.Constant("AnhNguyenCoder")],[]))
-    lam1=ast.Lambda(_args(var_con_cak()),
+    lam1=ast.Lambda(_args(rb()),
         ast.Call(lam2,[ast.Constant("AnhNguyenCoder")],[]))
     return ast.Call(lam1,[ast.Constant("AnhNguyenCoder")],[])
 
@@ -847,12 +847,12 @@ def _safe_source(obj):
 
 def obfint(i):
     haha=211-i
-    lam3=ast.Lambda(_args(var_con_cak()),
+    lam3=ast.Lambda(_args(rb()),
         ast.Call(ast.Name("__Deobf__",ast.Load()),
             [ast.BinOp(ast.Constant(211),ast.Sub(),ast.Constant(haha))],[]))
-    lam2=ast.Lambda(_args(var_con_cak()),
+    lam2=ast.Lambda(_args(rb()),
         ast.Call(lam3,[ast.Constant("AnhNguyenCoder")],[]))
-    lam1=ast.Lambda(_args(var_con_cak()),
+    lam1=ast.Lambda(_args(rb()),
         ast.Call(lam2,[ast.Constant("AnhNguyenCoder")],[]))
     return ast.Call(lam1,[ast.Constant("AnhNguyenCoder")],[])
 
@@ -927,9 +927,9 @@ class obf(ast.NodeTransformer):
 from ast import *
 
 def gen_jcode(code):
-    men = var_con_cak()
-    anhnguyencoder = var_con_cak()
-    izumkonata = var_con_cak()
+    men = rb()
+    anhnguyencoder = rb()
+    izumkonata = rb()
 
     return [
         Assign(
@@ -1108,7 +1108,7 @@ class junk(ast.NodeTransformer):
             if isinstance(j, (ast.FunctionDef, ast.ClassDef)):
                 self.visit(j)
 
-            junk_blocks = [gen_jcode(j) for _ in range(3)]
+            junk_blocks = [gen_jcode(j) for _ in range(2)]
 
             node.body[i] = junk_blocks + [j]
 
@@ -1116,13 +1116,13 @@ class junk(ast.NodeTransformer):
 
     def visit_FunctionDef(self, node):
         for i, j in enumerate(node.body):
-            junk_blocks = [gen_jcode(j) for _ in range(3)]
+            junk_blocks = [gen_jcode(j) for _ in range(2)]
             node.body[i] = junk_blocks + [j]
         return node
 
     def visit_ClassDef(self, node):
         for i, j in enumerate(node.body):
-            junk_blocks = [gen_jcode(j) for _ in range(3)]
+            junk_blocks = [gen_jcode(j) for _ in range(2)]
             node.body[i] = junk_blocks + [j]
         return node
 
