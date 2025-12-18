@@ -5,7 +5,7 @@
 
 ## 🌀 IzumKonata Obfuscator.
 
--> High-Speed Obfuscation Engine – Advanced Anti-Tamper – Multi-Layer Compression
+-> High-Speed Obfuscated Engine – Advanced Anti-Tamper - Anti-Crack – Anti-Debug – Anti-VM – Multi-Layer Compression
 
 <img width="1917" height="1077" alt="Ảnh chụp màn hình 2025-11-25 222944" src="https://github.com/user-attachments/assets/ddbe35bd-e0b6-46f0-a007-e42c49d639ea" />
 
