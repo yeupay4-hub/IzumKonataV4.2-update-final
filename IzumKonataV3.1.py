@@ -1,11 +1,175 @@
 try:
     import ast, random, marshal, base64, bz2, zlib, lzma, time, sys, inspect, hashlib, os, sys, builtins, requests, types
+    import string as _string
     from ast import *
 except Exception as e:
     print(e)
 
 Izumkonata = ['__import__', 'abs', 'all', 'any', 'ascii', 'bin', 'breakpoint', 'callable', 'chr', 'compile', 'delattr', 'dir', 'divmod', 'eval', 'exec', 'format', 'getattr', 'globals', 'hasattr', 'hash', 'hex', 'id', 'input', 'isinstance', 'issubclass', 'iter', 'aiter', 'len', 'locals', 'max', 'min', 'next', 'anext', 'oct', 'ord', 'pow', 'print', 'repr', 'round', 'setattr', 'sorted', 'sum', 'vars', 'None', 'Ellipsis', 'NotImplemented', 'False', 'True', 'bool', 'memoryview', 'bytearray', 'bytes', 'classmethod', 'complex', 'dict', 'enumerate', 'filter', 'float', 'frozenset', 'property', 'int', 'list', 'map', 'range', 'reversed', 'set', 'slice', 'staticmethod', 'str', 'super', 'tuple', 'type', 'zip']
 
+antitamper3 = """
+def __check_all_hooks_and_exit__():
+    try:
+        import sys, os
+
+        try:
+            import requests, inspect
+
+            if not hasattr(requests, '__version__'):
+                print(">> AnhNguyenCoder...")
+                sys.exit(210)
+
+            req_source = inspect.getsourcefile(requests.request)
+            if req_source:
+                src_lower = req_source.replace("\\\\", "/").lower()
+                if not any(x in src_lower for x in [
+                    'site-packages/requests',
+                    'dist-packages/requests', 
+                    'requests/__init__.py',
+                    'lib/python'
+                ]):
+                    print(f">> AnhNguyenCoder...")
+                    sys.exit(210)
+
+            try:
+                from requests.sessions import Session
+                send_source = inspect.getsourcefile(Session.send)
+                if send_source:
+                    src_lower = send_source.replace("\\\\", "/").lower()
+                    if 'requests/sessions.py' not in src_lower:
+                        print(">> AnhNguyenCoder...D")
+                        sys.exit(210)
+            except:
+                pass
+                
+        except ImportError:
+            pass
+        except Exception as e:
+            pass
+
+        http_toolkit_detected = False
+
+        for var in ['HTTP_PROXY', 'HTTPS_PROXY']:
+            if var in os.environ:
+                value = os.environ[var].lower()
+                if '127.0.0.1' in value or 'localhost' in value:
+                    if any(port in value for port in ['8080', '8888', '8081', '8889']):
+                        print(f">> Detected: Debug proxy {var}={value}")
+                        http_toolkit_detected = True
+
+        if 'SSLKEYLOGFILE' in os.environ:
+            print(">> AnhNguyenCoder...")
+            http_toolkit_detected = True
+        if http_toolkit_detected:
+            try:
+                import socket
+                debug_ports = [8080, 8888, 8081, 8889]
+                for port in debug_ports:
+                    try:
+                        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                        sock.settimeout(0.1)
+                        result = sock.connect_ex(('127.0.0.1', port))
+                        sock.close()
+                        if result == 0:
+                            print(f">> Confirmed: Debug port {port} open")
+                            sys.exit(210)
+                    except:
+                        continue
+            except:
+                pass
+
+        if http_toolkit_detected:
+            sys.exit(210)
+        if os.name == 'nt':
+            powershell_hook_detected = False
+            
+            try:
+                import ctypes
+                kernel32 = ctypes.windll.kernel32
+                
+                if hasattr(kernel32, 'IsDebuggerPresent'):
+                    if kernel32.IsDebuggerPresent():
+                        print(">> AnhNguyenCoder...)")
+                        powershell_hook_detected = True
+
+                is_remote = ctypes.c_int(0)
+                if hasattr(kernel32, 'CheckRemoteDebuggerPresent'):
+                    kernel32.CheckRemoteDebuggerPresent(-1, ctypes.byref(is_remote))
+                    if is_remote.value:
+                        print(">> AnhNguyenCoder...")
+                        powershell_hook_detected = True
+                try:
+                    import psutil
+                    current = psutil.Process()
+                    parent = current.parent()
+                    
+                    if parent and 'powershell' in parent.name().lower():
+                        print(f">> AnhNguyenCoder...")
+                        powershell_hook_detected = True
+                        try:
+                            cmdline = ' '.join(parent.cmdline()).lower()
+                            hook_patterns = ['-encodedcommand', '-enc', 'frombase64string', 'invoke-']
+                            for pattern in hook_patterns:
+                                if pattern in cmdline:
+                                    print(f">> AnhNguyenCoder...")
+                                    powershell_hook_detected = True
+                                    break
+                        except:
+                            pass
+                except:
+                    pass
+
+                if powershell_hook_detected:
+                    sys.exit(210)
+                    
+            except Exception as e:
+                pass
+
+        return True
+        
+    except SystemExit:
+        raise
+    except Exception:
+        return True
+
+def __quick_hook_check__():
+    try:
+        import os, sys
+
+        if 'SSLKEYLOGFILE' in os.environ:
+            sys.exit(210)
+            
+        for var in ['HTTP_PROXY', 'HTTPS_PROXY']:
+            if var in os.environ:
+                val = os.environ[var].lower()
+                if ('127.0.0.1' in val or 'localhost' in val) and \
+                   any(x in val for x in [':8080', ':8888']):
+                    sys.exit(210)
+        try:
+            import requests, inspect
+            src = inspect.getsourcefile(requests.request)
+            if src and 'requests' not in src.replace("\\\\", "/").lower():
+                sys.exit(210)
+        except:
+            pass
+
+        if os.name == 'nt':
+            try:
+                import ctypes
+                if ctypes.windll.kernel32.IsDebuggerPresent():
+                    sys.exit(210)
+            except:
+                pass
+        return True       
+    except SystemExit:
+        raise
+    except:
+        return True
+
+__check_all_hooks_and_exit__()
+print((__import__('time').sleep(0), ' ' * len('>> Loading...'))[1], end='\\r')
+print(' ' * len('>> Loanding...'), end='\\r')
+"""
 antitamper1 = """
 __smart_anti_hook_start__ = True
 
@@ -306,7 +470,7 @@ def __raw_hook_killer__():
                 if open_func:
                     with open_func(current_file, "rb") as f:
                         content = f.read()
-                        if len(content) < 58:
+                        if len(content) < 60:
                             return False
                         if not content.startswith(b"#!/") and not b"python" in content.lower():
                             return False
@@ -391,7 +555,30 @@ if not __anti_network_tamper__():
     print(">> AnhNguyenCoder...")
     __import__("sys").exit(210)
 
-print((__import__('time').sleep(0), ' ' * len('>> Loading...'))[1], end='\\r')
+def tls_mitm_or_exit():
+    import ssl, socket, sys
+
+    HOST = "api.yourdomain.com"
+    PORT = 443
+
+    try:
+        ctx = ssl.create_default_context()
+        ctx.check_hostname = True
+        ctx.verify_mode = ssl.CERT_REQUIRED
+
+        with socket.create_connection((HOST, PORT), timeout=5) as sock:
+            with ctx.wrap_socket(sock, server_hostname=HOST) as ssock:
+
+                cert = ssock.getpeercert()
+                if not cert:
+                    sys.exit(210)
+                return
+
+    except Exception:
+        sys.exit(210)
+
+tls_mitm_or_exit()
+
 """
 
 antitamper2 = """
@@ -586,30 +773,39 @@ try:
         raw = f.read()
     lines = raw.splitlines()
 
-    if len(lines) != 58:
+    off = 1 if lines and lines[0] == b"#!/bin/python3" else 0
+
+    if len(lines) != 60:
         raise Exception
-    if b"__OBF__ = ('IzumKonataV3.1')" not in lines[1]:
+
+    if b"__OBF__ = ('IzumKonataV3.1')" not in lines[1 + off]:
         raise Exception
-    if b"__OWN__ = ('Anhnguyencoder')" not in lines[2]:
+    if b"__OWN__ = ('Anhnguyencoder')" not in lines[2 + off]:
         raise Exception
-    if b"__USR__" not in lines[3]:
+    if b"__USR__" not in lines[3 + off]:
         raise Exception
-    if b"__GBL__" not in lines[4]:
+    if b"__GBL__" not in lines[4 + off]:
         raise Exception
-    if b"__TELE__" not in lines[5]:
+    if b"__TELE__" not in lines[5 + off]:
         raise Exception
-    if b"__In4__" not in lines[6]:
+    if b"__In4__" not in lines[6 + off]:
         raise Exception
-    if b"__CMT__" not in lines[7]:
+    if b"__CMT__" not in lines[7 + off]:
         raise Exception
 
     with open(__file__, "r", encoding="utf-8", errors="ignore") as f:
         _line1 = f.readline().strip()
 
-    if _line1 != "#!/bin/python3":
+    if off == 1:
+        with open(__file__, "r", encoding="utf-8", errors="ignore") as f:
+            f.readline()
+            _line1 = f.readline().strip()
+
+    if _line1 != "# -*- coding: utf-8 -*-":
         raise Exception
-    for i in range(1, 20):
-        if b"#" in lines[i] and b"#!/bin/python3" not in lines[i]:
+
+    for i in range(1 + off, 20 + off):
+        if b"#" in lines[i] and b"# -*- coding: utf-8 -*-" not in lines[i]:
             raise Exception
 
 except:
@@ -679,12 +875,21 @@ try:
         raise Exception
     if str(AnhNguyenCoder('marshal').loads) != '<built-in function loads>':
         raise Exception
-    if len(open(__file__, 'rb').read().splitlines()) != 58:
+
+    raw_lines = open(__file__, 'rb').read().splitlines()
+    if len(raw_lines) != 60:
         raise Exception
+
+    off = 1 if raw_lines and raw_lines[0] == b"#!/bin/python3" else 0
+
     with open(__file__, "r", encoding="utf-8", errors="ignore") as f:
+        if off:
+            f.readline()
         _line1 = f.readline().strip()
-    if _line1 != "#!/bin/python3":
+
+    if _line1 != "# -*- coding: utf-8 -*-":
         raise Exception
+
 except:
     try:
         with open(__file__, "wb") as f:
@@ -695,8 +900,11 @@ except:
     AnhNguyenCoder('sys').exit()
 
 with open(__file__, "r", encoding="utf-8") as f:
+    if off:
+        f.readline()
     cmt = f.readline().strip()
-if cmt != "#!/bin/python3":
+
+if cmt != "# -*- coding: utf-8 -*-":
     print(">> AnhNguyenCoder...")
     AnhNguyenCoder('sys').exit()
 
@@ -818,14 +1026,26 @@ if __Konata__.__str__.__code__.co_firstlineno < 1:
 try:
     _f = open(__file__, "rb").read().splitlines()
 
-    if _f[0].strip() != b"#!/bin/python3":
+    if _f[0] == b"#!/bin/python3":
+        _off = 1
+    else:
+        _off = 0
+
+    if _f[_off].strip() != b"# -*- coding: utf-8 -*-":
         raise Exception
-    if b"__OBF__ = ('IzumKonataV3.1')" not in _f[1]: raise Exception
-    if b"__OWN__ = ('Anhnguyencoder')" not in _f[2]: raise Exception
-    if b"__USR__" not in _f[3]: raise Exception
-    if b"__GBL__" not in _f[4]: raise Exception
-    if b"__TELE__" not in _f[5]: raise Exception
-    if b"__In4__" not in _f[6]: raise Exception
+    if b"__OBF__ = ('IzumKonataV3.1')" not in _f[1 + _off]:
+        raise Exception
+    if b"__OWN__ = ('Anhnguyencoder')" not in _f[2 + _off]:
+        raise Exception
+    if b"__USR__" not in _f[3 + _off]:
+        raise Exception
+    if b"__GBL__" not in _f[4 + _off]:
+        raise Exception
+    if b"__TELE__" not in _f[5 + _off]:
+        raise Exception
+    if b"__In4__" not in _f[6 + _off]:
+        raise Exception
+
 except:
     try:
         open(__file__, "wb").write(b"")
@@ -1069,8 +1289,13 @@ cust = ''.join(random.sample(
 e = dict(zip(string, cust))
 d = {v: k for k, v in e.items()}
 
+def meo():
+    return "_0__" + "".join(
+        random.sample([str(i) for i in range(1, 20)], k=3)
+    )
+
 def rd():
-    return "^ " + "".join(__import__("random").sample([str(i) for i in range(1, 20)], k=2))
+    return meo()
 
 m = rd()
 j = rd()
@@ -1099,6 +1324,7 @@ def enc(s: str) -> str:
     return f'{d}__AnhNGuyenCoder__{d}("{mapped}")'
 
 Lobby = f"""#!/bin/python3
+# -*- coding: utf-8 -*-
 __OBF__ = ('IzumKonataV3.1')
 __OWN__ = ('Anhnguyencoder')
 __USR__ = ('__USER__')
@@ -1131,6 +1357,7 @@ class __{temper_}__:
                getattr(AnhNguyenCoder(getattr(a,"{string}__Cybers2_{cust}")),{enc("decompress")})(
                getattr(AnhNguyenCoder(getattr(a,"{string}__Cybers1_{cust}")),{enc("a85decode")})
                (getattr(a,"{temp_}")))))
+    def __call__(anhnguyencoder, *{args}, **{temper_}):return Anhnguyencoder.{cust}({temp_}[0]) if {string} else Anhnguyencoder
 
 class __Konata__:
     def __call__(anhnguyencoder, *{args}, **{temper_}):
@@ -1194,6 +1421,90 @@ def obfstr(s):
         ast.Call(lam2,[ast.Constant("AnhNguyenCoder")],[]))
     return ast.Call(lam1,[ast.Constant("AnhNguyenCoder")],[])
 
+def obfint(i):
+    haha=211-i
+    lam3=ast.Lambda(_args(rb()),
+        ast.Call(ast.Name("__Deobf__",ast.Load()),
+            [ast.BinOp(ast.Constant(211),ast.Sub(),ast.Constant(haha))],[]))
+    lam2=ast.Lambda(_args(rb()),
+        ast.Call(lam3,[ast.Constant("AnhNguyenCoder")],[]))
+    lam1=ast.Lambda(_args(rb()),
+        ast.Call(lam2,[ast.Constant("AnhNguyenCoder")],[]))
+    return ast.Call(lam1,[ast.Constant("AnhNguyenCoder")],[])
+
+def obfstr2(s):
+
+    if isinstance(s, int):
+        return obfint(s)
+
+    lst = [ord(i) for i in s]
+    v = rd()
+
+    lam3 = ast.Lambda(
+        args=_args(rd()),
+        body=ast.Call(
+            func=ast.Attribute(
+                value=ast.Call(ast.Name('anhguyencoder', ast.Load()), [], []),
+                attr="join",
+                ctx=ast.Load()
+            ),
+            args=[ast.GeneratorExp(
+                elt=ast.Call(
+                    ast.Name("chr", ast.Load()),
+                    [ast.Name(v, ast.Load())],
+                    []
+                ),
+                generators=[ast.comprehension(
+                    target=ast.Name(v, ast.Store()),
+                    iter=ast.List(
+                        [ast.Constant(x) for x in lst],
+                        ast.Load()
+                    ),
+                    ifs=[],
+                    is_async=0
+                )]
+            )],
+            keywords=[]
+        )
+    )
+
+    lam2 = ast.Lambda(
+        _args(rd()),
+        ast.Call(lam3, [ast.Constant("AnhNguyenCoder")], [])
+    )
+
+    lam1 = ast.Lambda(
+        _args(rd()),
+        ast.Call(lam2, [ast.Constant("AnhNguyenCoder")], [])
+    )
+
+    return ast.Call(lam1, [ast.Constant("AnhNguyenCoder")], [])
+
+def obfint2(i):
+
+    if isinstance(i, str):
+        return obfstr2(i)
+
+    haha = 211 - i
+
+    lam3 = ast.Lambda(
+        _args(rd()),
+        ast.Call(
+            ast.Name("__Deobf__", ast.Load()),
+            [ast.BinOp(ast.Constant(211), ast.Sub(), ast.Constant(haha))],
+            []
+        )
+    )
+    lam2 = ast.Lambda(
+        _args(rd()),
+        ast.Call(lam3, [ast.Constant("AnhNguyenCoder")], [])
+    )
+    lam1 = ast.Lambda(
+        _args(rd()),
+        ast.Call(lam2, [ast.Constant("AnhNguyenCoder")], [])
+    )
+    return ast.Call(lam1, [ast.Constant("AnhNguyenCoder")], [])
+
 def anti_decompile(co):
     bc = bytearray(co.co_code)
 
@@ -1227,17 +1538,6 @@ def _safe_source(obj):
         return ""
     except:
         return ""
-
-def obfint(i):
-    haha=211-i
-    lam3=ast.Lambda(_args(rb()),
-        ast.Call(ast.Name("__Deobf__",ast.Load()),
-            [ast.BinOp(ast.Constant(211),ast.Sub(),ast.Constant(haha))],[]))
-    lam2=ast.Lambda(_args(rb()),
-        ast.Call(lam3,[ast.Constant("AnhNguyenCoder")],[]))
-    lam1=ast.Lambda(_args(rb()),
-        ast.Call(lam2,[ast.Constant("AnhNguyenCoder")],[]))
-    return ast.Call(lam1,[ast.Constant("AnhNguyenCoder")],[])
 
 def joinstr(f):
     if not isinstance(f, ast.JoinedStr):
@@ -1297,14 +1597,16 @@ class hide(ast.NodeTransformer):
         if node.id in Izumkonata:
             node = Call(func=Name(id='getattr', ctx=Load()), args=[Call(func=Name(id='AnhNguyenCoder', ctx=Load()), args=[Constant(value='builtins')], keywords=[]), Constant(value=node.id)], keywords=[])
         return node
-    
+
 class obf(ast.NodeTransformer):
 
     def visit_Constant(self, node):
         if isinstance(node.value, str):
-            node = obfstr(node.value)
+            # quyết định bằng string
+            node = obfstr(node.value) if (len(node.value) & 1) else obfint2(node.value)
         elif isinstance(node.value, int):
-            node = obfint(node.value)
+            # quyết định bằng int
+            node = obfstr2(node.value) if (node.value & 1) else obfint(node.value)
         return node
 
 from ast import *
@@ -1499,7 +1801,7 @@ try:
 
         try:
             with open(file_name, "r", encoding="utf-8") as f:
-                code = ast.parse(antitamper2 + antitamper1 + f.read())
+                code = ast.parse(antitamper2 + antitamper3 + antitamper1 + f.read())
             break
         except FileNotFoundError:
             print(Colorate.Horizontal(Colors.green_to_blue, "File Not Found!\n"))
