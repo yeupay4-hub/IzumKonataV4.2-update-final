@@ -29,9 +29,11 @@
 
 -> Do not allow file editing
 
+-> Prevent decryption when dis.dis Marshal.loads
+
 -> Check fixed line number
 
--> Check builtins are hooked
+-> Check builtins, builtins.exec, builtins.eval are hooked
 
 -> Check module requests are replaced
 
