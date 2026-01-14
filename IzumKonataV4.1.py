@@ -7,7 +7,7 @@ except Exception as e:
 
 Izumkonata = ['__import__', 'abs', 'all', 'any', 'ascii', 'bin', 'breakpoint', 'callable', 'chr', 'compile', 'delattr', 'dir', 'divmod', 'eval', 'exec', 'format', 'getattr', 'globals', 'hasattr', 'hash', 'hex', 'id', 'input', 'isinstance', 'issubclass', 'iter', 'aiter', 'len', 'locals', 'max', 'min', 'next', 'anext', 'oct', 'ord', 'pow', 'print', 'repr', 'round', 'setattr', 'sorted', 'sum', 'vars', 'None', 'Ellipsis', 'NotImplemented', 'False', 'True', 'bool', 'memoryview', 'bytearray', 'bytes', 'classmethod', 'complex', 'dict', 'enumerate', 'filter', 'float', 'frozenset', 'property', 'int', 'list', 'map', 'range', 'reversed', 'set', 'slice', 'staticmethod', 'str', 'super', 'tuple', 'type', 'zip', 'print']
 
-antitamper3 = """
+antitamper3 = r"""
 def __check_module__():
     try:
         import os, sys
@@ -170,7 +170,7 @@ __anti_tamper__()
 
 """
 
-antitamper2 = r"""
+antitamper2 = """
 def __anti_hook_requests_api_print_url__():
     try:
         import os, sys, inspect, re
@@ -547,7 +547,7 @@ __checkhookpro__()
 
 print((__import__('time').sleep(0), ' ' * len('>> Loading...'))[1], end='\\r')
 """
-antitamper4 = """
+antitamper4 = r"""
 __anti_hook_pro__ = True
 
 def __internal_anti_hook_checks__():
@@ -958,7 +958,7 @@ tls_mitm_or_exit()
     
 """
 
-antitamper1 = """
+antitamper1 = r"""
 def __anti_kramer_load__():
     try:
 
