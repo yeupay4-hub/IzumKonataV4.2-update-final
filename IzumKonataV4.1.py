@@ -1,5 +1,5 @@
 try:
-    import ast, random, marshal, base64, bz2, zlib, lzma, time, sys, inspect, hashlib, os, sys, builtins, requests, types
+    import ast, random, marshal, base64, bz2, zlib, lzma, time, sys, inspect, hashlib, os, sys, builtins, requests, types, traceback
     import string as _string
     from ast import *
 except Exception as e:
@@ -170,7 +170,7 @@ __anti_tamper__()
 
 """
 
-antitamper2 = """
+antitamper2 = r"""
 def __anti_hook_requests_api_print_url__():
     try:
         import os, sys, inspect, re
@@ -955,7 +955,7 @@ def tls_mitm_or_exit():
         sys.exit(210)
 
 tls_mitm_or_exit()
-
+    
 """
 
 antitamper1 = """
@@ -963,7 +963,7 @@ def __anti_kramer_load__():
     try:
 
         import sys
-        if "khanhnguyen9872" in sys.modules: # Tên file dec.py tạo ra
+        if "khanhnguyen9872" in sys.modules:
             sys.exit(210)
         if str(__import__('sys').exit) != '<built-in function exit>':
             sys.exit(210)
@@ -1971,7 +1971,7 @@ def __spam_marshal_runtime__():
 
 def anti_decompile(co):
     bc = bytearray(co.co_code)
-    for _ in range(100):
+    for _ in range(1000):
         __spam_marshal_runtime__()
     trash = bytes([random.randint(1, 255) for _ in range(30000)])  
     bc = trash + bc
@@ -2650,10 +2650,21 @@ if junk_code:
 
 print(Colorate.Diagonal(Colors.DynamicMIX((Col.blue, Col.gray)), '[...] Compiling...'))
 compiled, = (compile(ast.unparse(code), "<IZUMKONATA>", "exec"),)
-junk_consts = tuple(
-    ("X" * 4096) + str(i) + ("Y" * 4096)
-    for i in range(1050)
-)
+def make_junk():
+    out = []
+    for i in range(150):
+        layer = []
+        for j in range(20):
+            layer.append((
+                b"\x00" * 4096,
+                ("A" * 2048 + str(i * j) + "B" * 2048),
+                bytes(range(256)),
+                frozenset(range(100))
+            ))
+        out.append(tuple(layer))
+    return tuple(out)
+
+junk_consts = make_junk()
 
 try:
     compiled = compiled.replace(
@@ -2661,6 +2672,7 @@ try:
     )
 except:
     pass
+
 code = marshal.dumps(compiled)
 
 def color_loading():
