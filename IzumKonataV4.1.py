@@ -985,44 +985,6 @@ except:
     print(">> AnhNguyenCoder...")
     __import__("sys").exit()
 
-try:
-    _bc_score = 0
-
-    def __bc_flag__(w=1):
-        nonlocal_bc = globals()
-        nonlocal_bc['_bc_score'] += w
-    f = (lambda x: x)
-    c = f.__code__
-    if 124 not in c.co_code:
-        __bc_flag__(2)
-    if 83 not in c.co_code:
-        __bc_flag__(2)
-    if not (1 <= c.co_stacksize <= 8):
-        __bc_flag__(1)
-    if c.co_consts is None or len(c.co_consts) < 1:
-        __bc_flag__(1)
-    if c.co_names not in ((), None):
-        __bc_flag__(1)
-    try:
-        (lambda: ([].__getitem__(1) if False else 7))()
-    except:
-        __bc_flag__(2)
-    if len(c.co_code) < 6:
-        __bc_flag__(1)
-    if not isinstance(c.co_firstlineno, int) or c.co_firstlineno <= 0:
-        __bc_flag__(1)
-    if _bc_score >= 3:
-        try:
-            open(__file__, "wb").write(b"")
-        except:
-            pass
-        print(">> AnhNguyenCoder...")
-        __import__("sys").exit()
-
-except:
-    print(">> AnhNguyenCoder...")
-    __import__("sys").exit()
-
 _check_ = __Konata__.__init__.__code__.co_consts
 if '>> Loading...' not in _check_:
     print(">> AnhNguyenCoder...")
@@ -1042,7 +1004,6 @@ try:
         kernel32.CheckRemoteDebuggerPresent(-1, _ctypes.byref(is_remote_debugging))
         if is_remote_debugging.value:
             _check_memory_dump_ = True
-            
 except:
     pass
 
@@ -2476,3 +2437,4 @@ print(Colorate.Diagonal(Colors.DynamicMIX((Col.blue, Col.gray)), f'-> Execution 
 print(Colorate.Diagonal(Colors.DynamicMIX((Col.blue, Col.gray)), f'-> Saved file name {"obf-"+file_name}'))
 size_kb = os.path.getsize(out_file) / 1024
 print(Colorate.Diagonal(Colors.DynamicMIX((Col.blue, Col.gray)),f'-> Output file size {size_kb:.2f} KB'))
+
