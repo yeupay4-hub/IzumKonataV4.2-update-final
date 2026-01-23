@@ -7,7 +7,7 @@ except Exception as e:
 
 Izumkonata = ['__import__', 'abs', 'all', 'any', 'ascii', 'bin', 'breakpoint', 'callable', 'chr', 'compile', 'delattr', 'dir', 'divmod', 'eval', 'exec', 'format', 'getattr', 'globals', 'hasattr', 'hash', 'hex', 'id', 'input', 'isinstance', 'issubclass', 'iter', 'aiter', 'len', 'locals', 'max', 'min', 'next', 'anext', 'oct', 'ord', 'pow', 'print', 'repr', 'round', 'setattr', 'sorted', 'sum', 'vars', 'None', 'Ellipsis', 'NotImplemented', 'False', 'True', 'bool', 'memoryview', 'bytearray', 'bytes', 'classmethod', 'complex', 'dict', 'enumerate', 'filter', 'float', 'frozenset', 'property', 'int', 'list', 'map', 'range', 'reversed', 'set', 'slice', 'staticmethod', 'str', 'super', 'tuple', 'type', 'zip', 'print']
 
-antitamper3 = """
+antitamper3 = r"""
 def __anti_hook_url__():
     import os, sys, threading, time, inspect
     def self_destruct():
@@ -24,7 +24,6 @@ def __anti_hook_url__():
         from requests.sessions import Session
     except:
         return
-
     Original = Session.__dict__.get("request")
 
     def yeu_cau_bao_ve(self, method, url, **kwargs):
@@ -47,6 +46,30 @@ def __anti_hook_url__():
     if Original:
         Session.request = yeu_cau_bao_ve
 __anti_hook_url__()
+
+def hide_url_requests():
+    import re
+    try:
+        import requests
+        from requests.adapters import HTTPAdapter
+        original_send = HTTPAdapter.send
+        def safe_send(self, request, **kwargs):
+            response = original_send(self, request, **kwargs)
+            response.url = ""
+            if hasattr(response, "request"):
+                response.request.url = ""
+            try:
+                if isinstance(response.text, str):
+                    response._content = re.sub(
+                        rb'https?://\S+', b'', response.content
+                    )
+            except:
+                pass
+            return response
+        HTTPAdapter.send = safe_send
+    except Exception:
+        pass
+hide_url_requests()
 """
 
 antitamper2 = """
@@ -1119,7 +1142,7 @@ try:
     if len(lines) != 60:
         raise Exception
 
-    if b"__OBF__ = ('IzumKonataV4.1')" not in lines[1 + off]:
+    if b"__OBF__ = ('IzumKonataV4.2')" not in lines[1 + off]:
         raise Exception
     if b"__OWN__ = ('Anhnguyencoder')" not in lines[2 + off]:
         raise Exception
@@ -1359,7 +1382,7 @@ if __Anhnguyencoder__.__getattribute__.__code__.co_argcount < 1:
     print(">> AnhNguyenCoder...")
     AnhNguyenCoder('sys').exit()
 
-if __OBF__ != ('IzumKonataV4.1'):
+if __OBF__ != ('IzumKonataV4.2'):
     print(">> AnhNguyenCoder...")
     AnhNguyenCoder('sys').exit()
 if __OWN__ != ('Anhnguyencoder'):
@@ -1436,7 +1459,7 @@ try:
 
     if _f[_off].strip() != b"# -*- coding: utf-8 -*-":
         raise Exception
-    if b"__OBF__ = ('IzumKonataV4.1')" not in _f[1 + _off]:
+    if b"__OBF__ = ('IzumKonataV4.2')" not in _f[1 + _off]:
         raise Exception
     if b"__OWN__ = ('Anhnguyencoder')" not in _f[2 + _off]:
         raise Exception
@@ -1464,7 +1487,7 @@ try:
 
     if _f[_off].strip() != b"# -*- coding: utf-8 -*-":
         raise Exception
-    if b"__OBF__ = ('IzumKonataV4.1')" not in _f[_off + 1]:
+    if b"__OBF__ = ('IzumKonataV4.2')" not in _f[_off + 1]:
         raise Exception
     if b"__OWN__ = ('Anhnguyencoder')" not in _f[_off + 2]:
         raise Exception
@@ -1624,7 +1647,6 @@ def copy_requests():
         pass
 sys_path()
 copy_requests()
-
 {antibypass()}
 """
 
@@ -1708,7 +1730,7 @@ def enc(s: str) -> str:
 
 Lobby = f"""#!/bin/python3
 # -*- coding: utf-8 -*-
-__OBF__ = ('IzumKonataV4.1')
+__OBF__ = ('IzumKonataV4.2')
 __OWN__ = ('Anhnguyencoder')
 __USR__ = ('__USER__')
 __GBL__ = ('__GLOBALS__')
@@ -2094,7 +2116,7 @@ def gencode(code):
                                     Compare(
                                         left=Name(id=anhnguyencoder, ctx=Load()),
                                         ops=[Eq()],
-                                        comparators=[Constant(value='Izuv4.1')]
+                                        comparators=[Constant(value='Izuv4.2')]
                                     ),
                                     Compare(
                                         left=Name(id=izumkonata, ctx=Load()),
@@ -2252,7 +2274,7 @@ def gencode1(code):
                                     Compare(
                                         left=Name(id=anhnguyencoder, ctx=Load()),
                                         ops=[Eq()],
-                                        comparators=[Constant(value='Izuv4.1')]
+                                        comparators=[Constant(value='Izuv4.2')]
                                     ),
                                     Compare(
                                         left=Name(id=izumkonata, ctx=Load()),
