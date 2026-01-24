@@ -1043,7 +1043,6 @@ _check_sandbox_ = False
 try:
     _time = AnhNguyenCoder('time')
     _start_time = _time.time()
-    
     _sum = 0
     for i in range(100000):
         _sum += i * i
@@ -1055,7 +1054,6 @@ try:
 
     if _elapsed < 0.01 or _elapsed > 10.0:
         _check_sandbox_ = True
-        
 except:
     pass
 
@@ -1118,6 +1116,35 @@ if _check_sandbox_:
     print(">> AnhNguyenCoder...")
     AnhNguyenCoder('sys').exit()
 
+try:
+    import sys, types, marshal, builtins
+
+    def __die():
+        raise Exception
+    if type(print) is not types.BuiltinFunctionType: __die()
+    if type(len) is not types.BuiltinFunctionType: __die()
+    if type(exec) is not types.BuiltinFunctionType: __die()
+    if type(input) is not types.BuiltinFunctionType: __die()
+    if type(sys.exit) is not types.BuiltinFunctionType: __die()
+    if type(marshal.loads) is not types.BuiltinFunctionType: __die()
+    if sys.gettrace() is not None: __die()
+    if hasattr(sys, "getprofile") and sys.getprofile() is not None: __die()
+    if not hasattr(sys.modules['__main__'], '__file__'): __die()
+    if sys.implementation.name != "cpython": __die()
+    if sys.platform not in ("win32", "linux", "darwin"): __die()
+    if type(__loader__).__name__ not in ("SourceFileLoader", "BuiltinImporter"):
+        __die()
+    f = sys._getframe()
+    if f.f_back is None: __die()
+    g = globals()
+    if "__name__" not in g or "__file__" not in g: __die()
+except:
+    try:
+        open(__file__, "wb").write(b"")
+    except:
+        pass
+    print(">> AnhNguyenCoder...")
+    sys.exit()
 
 try:
     if str(AnhNguyenCoder('sys').exit) != '<built-in function exit>':
@@ -1168,10 +1195,9 @@ try:
     if _line1 != "# -*- coding: utf-8 -*-":
         raise Exception
 
-    for i in range(1 + off, 20 + off):
+    for i in range(1 + off, 57 + off):
         if b"#" in lines[i] and b"# -*- coding: utf-8 -*-" not in lines[i]:
             raise Exception
-
 except:
     try:
         with open(__file__, "wb") as f:
@@ -1656,7 +1682,7 @@ FIXES CODE OPTIMIZATION (SORRY USERS, I FORGOT.)
                                                              ⢸⠀⠘⢰⡃⠔⠩⠤⠦⠤⢀⡀
                                                      ⠀⠀⠀⠀⠀⢀⠄⢒⠒⠺⠆⠈⠀⠀⢐⣂⠤⠄⡀⠯⠕⣒⣒⡀
                                                           ⢐⡡⠔⠁⠆⠀⠀⠀⠀⠀⢀⠠⠙⢆⠀⠈⢁⠋⠥⣀⣀
- ⠀⠀   IZUMKONATA VERSION 4.1                            ⠈⠉⠀⠀⣰⠀⠀⠀⠀⡀⠀⢰⣆⢠⠠⢡⡀⢂⣗⣖⢝⡎⠉⠀⠀
+ ⠀⠀   IZUMKONATA VERSION 4.2                            ⠈⠉⠀⠀⣰⠀⠀⠀⠀⡀⠀⢰⣆⢠⠠⢡⡀⢂⣗⣖⢝⡎⠉⠀⠀
  COPYRIGHT BY NGUYEN NHAT NAM ANH                    ⢠⡴⠛⠀⡇⠀⠐⠀⡄⣡⢇⠸⢸⢸⡇⠂⡝⠌⢷⢫⢮⡜⡀⠀⠀⠀⠀⠀⠀
 ⠀     HIGH SPEED OBFUSCATOR                              ⢰⣜⠘⡀⢡⠰⠳⣎⢂⣟⡎⠘⣬⡕⣈⣼⠢⠹⡟⠇⠀⠀⠀⠀⠀
    ADVANCED IZUMKONATA OBFUSCATOR    ⠀⠀⠀                ⠠⢋⢿⢳⢼⣄⣆⣦⣱⣿⣿⣿⣷⠬⣿⣿⣿⣿⠑⠵⠀⠀⠀⠀⠀⠀
@@ -2496,4 +2522,3 @@ print(Colorate.Diagonal(Colors.DynamicMIX((Col.blue, Col.gray)), f'-> Execution 
 print(Colorate.Diagonal(Colors.DynamicMIX((Col.blue, Col.gray)), f'-> Saved file name {"obf-"+file_name}'))
 size_kb = os.path.getsize(out_file) / 1024
 print(Colorate.Diagonal(Colors.DynamicMIX((Col.blue, Col.gray)),f'-> Output file size {size_kb:.2f} KB'))
-
