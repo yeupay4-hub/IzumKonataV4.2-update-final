@@ -149,4 +149,4 @@ Module: pystyle (auto install if missing)
 
 -> Telegram: https://t.me/ctevclwar
 
--> Facebook: https://www.facebook.com/ng.xau.k25
+-> Facebook: https://www.facebook.com/anhnguyencoder.izumkonata
