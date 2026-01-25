@@ -46,7 +46,7 @@ def __anti_hook_url__():
 __anti_hook_url__()
 
 def hide_url_requests():
-    import re
+    import sys, logging, re
     try:
         import requests
         from requests.adapters import HTTPAdapter
@@ -68,113 +68,71 @@ def hide_url_requests():
     except Exception:
         pass
     try:
-        import sys, ctypes, inspect, types, re, requests
-        from requests.adapters import HTTPAdapter
-        import logging
-        logging.getLogger("urllib3").setLevel(logging.WARNING)
-        logging.getLogger("requests").setLevel(logging.WARNING)
+        logging.getLogger("urllib3").setLevel(logging.CRITICAL)
+        logging.getLogger("requests").setLevel(logging.CRITICAL)
         logging.getLogger("urllib3.connectionpool").disabled = True
         sys.settrace(None)
-        _original_getframe = sys._getframe if hasattr(sys, '_getframe') else None
-        if _original_getframe:
-            def _hidden_getframe(*args, **kwargs):
-                frame = _original_getframe(*args, **kwargs)
-                if frame:
-                    frame.f_locals.pop('url', None)
-                    frame.f_locals.pop('request', None)
-                    frame.f_locals.pop('self', None)
-                return frame
-            sys._getframe = _hidden_getframe
-        _send_ptr = ctypes.c_void_p(id(HTTPAdapter.send))
-        original_bytes = HTTPAdapter.send.__code__.co_code
-        def _ultra_safe_send(self, request, **kwargs):
-            original_url = request.url
+        
+        import requests
+        from requests.adapters import HTTPAdapter
+        from requests.models import PreparedRequest
+        import urllib3
+        original_prepare = PreparedRequest.prepare
+        
+        def hidden_prepare(self, *args, **kwargs):
+            result = original_prepare(self, *args, **kwargs)
+            self.url = "http://0.0.0.0/hidden"
+
+            if hasattr(self, 'headers'):
+                headers_to_keep = {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+                    'Accept': '*/*',
+                    'Accept-Encoding': 'gzip, deflate',
+                    'Connection': 'keep-alive'
+                }
+
+                self.headers.clear()
+                self.headers.update(headers_to_keep)
+            self.method = 'POST'
+            if hasattr(self, 'body') and self.body:
+                self.body = b''
+            
+            return result
+        
+        PreparedRequest.prepare = hidden_prepare
+        original_send = HTTPAdapter.send
+        
+        def hidden_send(self, request, **kwargs):
             request.url = "http://0.0.0.0/hidden"
-            if hasattr(request, '_url'):
-                request._url = "http://0.0.0.0/hidden"
+
+            if 'Host' in request.headers:
+                request.headers['Host'] = '0.0.0.0'
+
             try:
-                import ctypes
-                PyCFunction_Type = type(HTTPAdapter.send)
-                response = None
-                for obj in gc.get_referrers(HTTPAdapter):
-                    if hasattr(obj, 'send'):
-                        try:
-                            response = obj.send.__wrapped__(self, request, **kwargs)
-                            break
-                        except:
-                            pass
-                
-                if response is None:
-                    response = HTTPAdapter.__dict__['send'].__func__(self, request, **kwargs)
-            except:
-                response = type('Response', (), {
-                    'status_code': 200,
-                    'content': b'',
-                    'text': '',
-                    'url': '',
-                    'request': type('Request', (), {'url': ''})()
-                })()
+                response = original_send(self, request, **kwargs)
+            except Exception:
+                response = requests.Response()
+                response.status_code = 200
+                response._content = b''
             response.url = ""
-            
-            if hasattr(response, "request"):
+            if hasattr(response, 'request') and response.request:
                 response.request.url = ""
-                for attr in ['url', '_url', 'full_url', 'path_url']:
-                    if hasattr(response.request, attr):
-                        setattr(response.request, attr, "")
-            try:
-                if hasattr(response, '_content'):
-                    content = response._content
-                    if content:
-                        patterns = [
-                            rb'https?://[^\s<>"\']+',
-                            rb'www\.[^\s<>"\']+',
-                            rb'[a-zA-Z0-9]+\.(com|net|org|io|vn)[^\s]*',
-                        ]
-                        for pattern in patterns:
-                            content = re.sub(pattern, b'', content)
-                        response._content = content
-                        for attr in ['text', 'json', '_content_consumed']:
-                            if hasattr(response, attr):
-                                setattr(response, attr, None if attr != '_content_consumed' else False)
-            except:
-                try:
-                    response._content = b''
-                except:
-                    pass
-            
+                response.request.method = "POST"
             return response
-        HTTPAdapter.__dict__['send'] = types.MethodType(_ultra_safe_send, HTTPAdapter)
-        delattr(HTTPAdapter, '__dict__')
+        HTTPAdapter.send = hidden_send
 
         try:
-            import urllib3, urllib3.connectionpool
-            if hasattr(urllib3.connectionpool.HTTPConnectionPool, 'urlopen'):
-                _original_urlopen = urllib3.connectionpool.HTTPConnectionPool.urlopen
-                
-                def _hidden_urlopen(self, method, url, *args, **kwargs):
-                    url = "http://0.0.0.0/hidden"
-                    response = _original_urlopen(self, method, url, *args, **kwargs)
-                    if hasattr(response, 'url'):
-                        response.url = ""
-                    return response
-                
-                urllib3.connectionpool.HTTPConnectionPool.urlopen = _hidden_urlopen
+            original_urlopen = urllib3.connectionpool.HTTPConnectionPool.urlopen
+            def hidden_urlopen(self, method, url, *args, **kwargs):
+                url = "http://0.0.0.0/hidden"
+                if 'headers' in kwargs:
+                    kwargs['headers'] = {}
+                return original_urlopen(self, 'POST', url, *args, **kwargs)
+            urllib3.connectionpool.HTTPConnectionPool.urlopen = hidden_urlopen
         except:
             pass
-
-        import threading
-        def _guard():
-            while True:
-                try:
-                    HTTPAdapter.send = types.MethodType(_ultra_safe_send, HTTPAdapter)
-                except:
-                    pass
-                threading.Event().wait(0.1)
-        guard_thread = threading.Thread(target=_guard, daemon=True)
-        guard_thread.start()
-        
     except Exception as e:
-        pass
+        print()
 hide_url_requests()
 """
 
@@ -1750,35 +1708,6 @@ finally:pass
     return _anti()
 
 antidec = f"""
-def __requests__():
-    try:
-        return __import__('os').path.dirname(__import__('os').path.abspath(__import__('sys').argv[0]))
-    except:
-        return __import__('os').getcwd()
-def sys_path():
-    sys = __import__('sys')
-    base = __requests__()
-    if base not in sys.path:
-        sys.path.insert(0, base)
-def copy_requests():
-    os = __import__('os')
-    sys = __import__('sys')
-    shutil = __import__('shutil')
-    base = __requests__()
-    dst = os.path.join(base, 'requests')
-    if os.path.exists(dst):
-        return
-    try:
-        req = __import__('requests')
-        src = os.path.dirname(req.__file__)
-    except:
-        return
-    try:
-        shutil.copytree(src, dst)
-    except:
-        pass
-sys_path()
-copy_requests()
 {antibypass()}
 """
 
