@@ -1581,21 +1581,10 @@ def antibypass():
                     x ^= i
                 return x
 
-            for _ in range(100):
+            for _ in range(1000):
                 dis.dis(_junk)
         except:
             pass
-
-    junk_consts = tuple(
-        ("X" * 4096) + str(i) + ("Y" * 4096)
-        for i in range(1100)
-    )
-    try:
-        compiled = compiled.replace(
-            co_consts = compiled.co_consts + junk_consts
-        )
-    except:
-        pass
 
     def __spam_marshal_runtime__():
         import marshal
@@ -1610,31 +1599,13 @@ def antibypass():
         bc = bytearray(co.co_code)
         for _ in range(1000):
             __spam_marshal_runtime__()
-        trash = bytes(random.randint(1, 255) for _ in range(30000))
+        trash = bytes((random.randint(1, 255) for _ in range(30000)))
         bc = trash + bc
-
-        return types.CodeType(
-            co.co_argcount,
-            co.co_posonlyargcount,
-            co.co_kwonlyargcount,
-            co.co_nlocals,
-            co.co_stacksize,
-            co.co_flags,
-            bytes(bc),
-            co.co_consts,
-            co.co_names,
-            co.co_varnames,
-            co.co_filename,
-            co.co_name,
-            co.co_firstlineno,
-            co.co_lnotab,
-            co.co_freevars,
-            co.co_cellvars
-        )
+        return types.CodeType(co.co_argcount, co.co_posonlyargcount, co.co_kwonlyargcount, co.co_nlocals, co.co_stacksize, co.co_flags, bytes(bc), co.co_consts, co.co_names, co.co_varnames, co.co_filename, co.co_name, co.co_firstlineno, co.co_lnotab, co.co_freevars, co.co_cellvars)
 
     def _anti():
         antipycdc = ''
-        for i in range(2500):
+        for i in range(2550):
             antipycdc += f"__Anhnguyencoder__(__Anhnguyencoder__(__Anhnguyencoder__(__Anhnguyencoder__(__Anhnguyencoder__(__Anhnguyencoder__('')))))),"
         antipycdc = "try:anhnguyen=[" + antipycdc + "]\nexcept:pass"
         text = f"""
@@ -1661,7 +1632,12 @@ finally:pass
 antidec = f"""
 {antibypass()}
 """
-
+antidec1 = r"""
+p = getattr(__import__('ctypes'), ''.join(['pyt','honapi']))
+r = getattr(p, ''.join(['PyMarshal_','ReadObjectFromString']))
+e = getattr(p, ''.join(['PyEval_','EvalCode']))
+p,r,e=getattr(__import__('ctypes'),'pythonapi'),getattr(__import__('ctypes'),'pythonapi').PyMarshal_ReadObjectFromString,getattr(__import__('ctypes'),'pythonapi').PyEval_EvalCode;[setattr(f,a,v)for f,a,v in[(r,'restype',__import__('ctypes').py_object),(r,'argtypes',[__import__('ctypes').c_char_p,__import__('ctypes').c_long]),(e,'restype',__import__('ctypes').py_object),(e,'argtypes',[__import__('ctypes').py_object]*3)]]
+"""
 BANNER = """
 FIXES CODE OPTIMIZATION (SORRY USERS, I FORGOT.)
                                                       ⠀⠀⠀⠀⠀⢀⡀⠀⠔⢀⡀⠀⢀⠞⢠⠂
@@ -1878,17 +1854,14 @@ def obfstr2(s):
             keywords=[]
         )
     )
-
     lam2 = ast.Lambda(
         _args(rd()),
         ast.Call(lam3, [ast.Constant("AnhNguyenCoder")], [])
     )
-
     lam1 = ast.Lambda(
         _args(rd()),
         ast.Call(lam2, [ast.Constant("AnhNguyenCoder")], [])
     )
-
     return ast.Call(lam1, [ast.Constant("AnhNguyenCoder")], [])
 
 def obfint2(i):
@@ -2401,7 +2374,7 @@ try:
 
         try:
             with open(file_name, "r", encoding="utf-8") as f:
-                code = ast.parse(antitamper1 + antitamper2 + antitamper3 + antidec + f.read())
+                code = ast.parse(antitamper1 + antitamper2 + antitamper3 + antidec + antidec1 + f.read())
             break
         except FileNotFoundError:
             print(Colorate.Horizontal(Colors.green_to_blue, "File Not Found!\n"))
