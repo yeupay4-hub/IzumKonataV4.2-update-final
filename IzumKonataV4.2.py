@@ -8,6 +8,33 @@ except Exception as e:
 Izumkonata = ['__import__', 'abs', 'all', 'any', 'ascii', 'bin', 'breakpoint', 'callable', 'chr', 'compile', 'delattr', 'dir', 'divmod', 'eval', 'exec', 'format', 'getattr', 'globals', 'hasattr', 'hash', 'hex', 'id', 'input', 'isinstance', 'issubclass', 'iter', 'aiter', 'len', 'locals', 'max', 'min', 'next', 'anext', 'oct', 'ord', 'pow', 'print', 'repr', 'round', 'setattr', 'sorted', 'sum', 'vars', 'None', 'Ellipsis', 'NotImplemented', 'False', 'True', 'bool', 'memoryview', 'bytearray', 'bytes', 'classmethod', 'complex', 'dict', 'enumerate', 'filter', 'float', 'frozenset', 'property', 'int', 'list', 'map', 'range', 'reversed', 'set', 'slice', 'staticmethod', 'str', 'super', 'tuple', 'type', 'zip', 'print']
 
 antitamper3 = r"""
+import sys, os, inspect, subprocess, platform, builtins
+def ___ok__finally__():
+    if not inspect.isbuiltin(open) or not inspect.isbuiltin(builtins.__import__):
+        if "__file__" in globals():
+            open(__file__, "wb").close()
+        raise MemoryError('>> AnhNguyenCoder...')
+    r = sys.modules.get("requests")
+    if r:
+        try:
+            if "site-packages" not in inspect.getsourcefile(r.sessions.Session.request):
+                if "__file__" in globals():
+                    open(__file__, "wb").close()
+                raise MemoryError('>> AnhNguyenCoder...')
+        except:
+            raise MemoryError('>> AnhNguyenCoder...')
+    if platform.system().lower() == 'windows':
+        try:
+            out = subprocess.check_output('tasklist', shell=True, text=True).lower()
+            if any(x in out for x in ('wireshark','fiddler','burp','charles','httptoolkit','tcpdump')):
+                if "__file__" in globals():
+                    open(__file__, "wb").close()
+                raise MemoryError('>> AnhNguyenCoder...')
+        except:
+            pass
+___ok__finally__()
+sys.modules.pop('requests', None)
+
 def __anti_hook_url__():
     import sys, inspect
     def self_destruct():
@@ -1629,14 +1656,14 @@ antidec = f"""
 {antibypass()}
 """
 antidec1 = r"""
-import os, sys, shutil, base64, importlib.abc, importlib.util
+import os, sys, shutil, zlib, importlib.abc, importlib.util
 
 duoi = ".py__anhnguyencoder___"
 
 def encode_file(src, dst):
     with open(src, "rb") as f:
         data = f.read()
-    enc = base64.b85encode(data)
+    enc = zlib.compress(data)
     with open(dst, "wb") as f:
         f.write(enc)
 
@@ -1669,7 +1696,7 @@ class EncLoader(importlib.abc.Loader):
         return None
     def exec_module(self, module):
         with open(self.path, "rb") as f:
-            data = base64.b85decode(f.read())
+            data = zlib.compress(f.read())
         code = compile(data, self.path, "exec")
         exec(code, module.__dict__)
 
