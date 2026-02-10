@@ -125,910 +125,147 @@ def hide_url_requests():
 hide_url_requests()
 """
 antitamper2 = """
-import os, sys, re, inspect, builtins, socket, ssl
-def __antihookprinturl__():
+import sys, os, builtins, inspect
+
+def anti_tamper():
     try:
-        import os, sys, inspect, re
-        hook_detected = False
-        hook_details = []
-        def safe_check(description, check_func):
-            nonlocal hook_detected, hook_details
-            try:
-                return check_func()
-            except Exception as e:
-                hook_details.append(f"{description} error: {str(e)[:50]}")
-                return None
-        def check_print_url_in_file(filepath):
-            if not os.path.exists(filepath):
-                return False
-            
-            try:
-                with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
-                    content = f.read()
+        for name in ("exec", "eval", "print", "__import__", "open"):
+            if not hasattr(builtins, name):
+                raise MemoryError("Anhnguyencoder...")
+            func = getattr(builtins, name)
+            if hasattr(func, "__wrapped__") or hasattr(func, "__code__"):
+                raise MemoryError("Anhnguyencoder...")
+            if "built-in function" not in str(func):
+                raise MemoryError("Anhnguyencoder...")
 
-                patterns = [
-                    r'print\s*\(\s*[^)]*url[^)]*\)',
-                    r'print\s*\(\s*[^)]*request\.url[^)]*\)',
-                    r'print\s*\(\s*[^)]*response\.url[^)]*\)',
-                    r'print\s*\(\s*[^)]*self\.url[^)]*\)',
-                    r'logging\.(debug|info|warning|error)\s*\(\s*[^)]*url[^)]*\)',
-                    r'logger\.(debug|info|warning|error)\s*\(\s*[^)]*url[^)]*\)',
-                ]
-                
-                for pattern in patterns:
-                    if re.search(pattern, content, re.IGNORECASE):
-                        return True
-                
-                return False
-            except:
-                return False
-
-        try:
-            import requests
-            current_requests_path = requests.__file__
-            
-            if not current_requests_path:
-                hook_details.append("requests.__file__ is None")
-                return False
-
-            requests_dir = os.path.dirname(current_requests_path)
-
-            files_to_check = [
-                ('api.py', 'API functions'),
-                ('__init__.py', 'Requests init'),
-                ('sessions.py', 'Session class'),
-                ('models.py', 'Request models'),
-                ('utils.py', 'Utilities'),
-                ('adapters.py', 'Adapters'),
-            ]
-            
-            for filename, description in files_to_check:
-                filepath = os.path.join(requests_dir, filename)
-                if os.path.exists(filepath):
-                    if check_print_url_in_file(filepath):
-                        hook_detected = True
-                        hook_details.append(f"Found print(url) in {filename} ({description})")
-
-            api_path = os.path.join(requests_dir, 'api.py')
-            if os.path.exists(api_path) and not hook_detected:
-                try:
-                    with open(api_path, 'r', encoding='utf-8', errors='ignore') as f:
-                        api_content = f.read()
-
-                    request_functions = ['get', 'post', 'put', 'delete', 'patch', 'head', 'options', 'request']
-                    
-                    for func_name in request_functions:
-                        func_pattern = rf'def\\s+{func_name}\\s*\\([^)]*\\):(.*?)(?=\\n\\ndef|\\nclass|\\n@|\\Z)'
-                        match = re.search(func_pattern, api_content, re.DOTALL | re.IGNORECASE)
-                        
-                        if match:
-                            func_body = match.group(1)
-
-                            url_patterns = [
-                                r'print\\s*\\([^)]*url[^)]*\\)',
-                                r'print\\s*\\([^)]*request_url[^)]*\\)',
-                                r'print\\s*\\([^)]*\\burl\\b[^)]*\\)',
-                            ]
-                            
-                            for pattern in url_patterns:
-                                if re.search(pattern, func_body, re.IGNORECASE):
-                                    hook_detected = True
-                                    hook_details.append(f"Found print(url) in {func_name}() function")
-                                    break
-
-                    suspicious_patterns = [
-                        (r'#.*print.*url', "Comment with print(url)"),
-                        (r"\"\"\"[\s\S]*?print[\s\S]*?url[\s\S]*?\"\"\", "Docstring with print(url)"),
-                        (r"'''[\s\S]*?print[\s\S]*?url[\s\S]*?'''", "Docstring with print(url)"),
-                    ]
-                    
-                    for pattern, desc in suspicious_patterns:
-                        if re.search(pattern, api_content, re.IGNORECASE):
-                            hook_detected = True
-                            hook_details.append(f"Found {desc} in api.py")
-                
-                except Exception as e:
-                    hook_details.append(f"Error checking api.py: {str(e)[:30]}")
-            if not hook_detected:
-                try:
-                    api_methods = ['get', 'post', 'put', 'delete', 'patch', 'head', 'options']
-                    
-                    for method in api_methods:
-                        if hasattr(requests, method):
-                            func = getattr(requests, method)
-
-                            try:
-                                source = inspect.getsource(func)
-                                if 'print(' in source and 'url' in source:
-                                    hook_detected = True
-                                    hook_details.append(f"Found print(url) in requests.{method}() source")
-                                    break
-                            except:
-                                pass
-                except:
-                    pass
-
-            if not hook_detected:
-                try:
-                    from requests.sessions import Session
-                    send_func = Session.send
-                    
-                    try:
-                        source = inspect.getsource(send_func)
-                        if 'print(' in source and 'url' in source:
-                            hook_detected = True
-                            hook_details.append("Found print(url) in Session.send()")
-                    except:
-                        pass
-                except:
-                    pass
-
-            if hook_detected:
-                try:
-                    if "__file__" in globals():
-                        with open(globals()["__file__"], "wb") as f:
-                            f.write(b"")
-                except:
-                    pass
-                print(f">> AnhNguyenCoder...")
-                sys.exit(210)
-
-            warnings = []
-
-            if not hasattr(requests, '__version__'):
-                warnings.append("No __version__ attribute")
-
-            current_normalized = current_requests_path.replace("\\\\", "/").lower()
-            valid_paths = ['site-packages/requests', 'dist-packages/requests']
-            if not any(p in current_normalized for p in valid_paths):
-                warnings.append(f"Unusual path: {current_requests_path}")
-
-            for filename in ['api.py', '__init__.py']:
-                filepath = os.path.join(requests_dir, filename)
-                if os.path.exists(filepath):
-                    try:
-                        size = os.path.getsize(filepath)
-                        if filename == 'api.py' and size < 1000:
-                            warnings.append(f"api.py too small ({size} bytes)")
-                        elif filename == '__init__.py' and size < 500:
-                            warnings.append(f"__init__.py too small ({size} bytes)")
-                    except:
-                        pass
-            
-            if warnings:
-                try:
-                    if "__file__" in globals():
-                        with open(globals()["__file__"], "wb") as f:
-                            f.write(b"")
-                except:
-                    pass
-                print(f">> AnhNguyenCoder...")
-                sys.exit(210)
-            
-            return True
-            
-        except ImportError:
-            try:
-                if "__file__" in globals():
-                    with open(globals()["__file__"], "wb") as f:
-                        f.write(b"")
-            except:
-                pass
-            print(">> AnhNguyenCoder...")
-            sys.exit(210)
-        except Exception as e:
-            try:
-                if "__file__" in globals():
-                    with open(globals()["__file__"], "wb") as f:
-                        f.write(b"")
-            except:
-                pass
-            print(f">> AnhNguyenCoder...")
-            sys.exit(210)
-            
+        for frame in inspect.stack():
+            fname = (frame.filename or "").lower()
+            if any(x in fname for x in ["pydevd", "debugpy", "pdb", "frida", "uncompyle"]):
+                raise MemoryError("Anhnguyencoder...")
     except SystemExit:
         raise
-    except Exception as e:
-        try:
-            if "__file__" in globals():
-                with open(globals()["__file__"], "wb") as f:
-                    f.write(b"")
-        except:
-            pass
-        print(f">> AnhNguyenCoder...")
-        sys.exit(210)
+    except:
+        raise MemoryError("Anhnguyencoder...")
 
 def __checkenvironment__():
     try:
-        import os, sys
-        warnings = []
-        proxy_vars = ['HTTP_PROXY', 'HTTPS_PROXY', 'SSLKEYLOGFILE']
-        for var in proxy_vars:
-            if var in os.environ:
-                value = os.environ[var]
-                if '127.0.0.1' in value or 'localhost' in value:
-                    warnings.append(f"{var} set to localhost")
-
-        if 'PYTHONDEBUG' in os.environ and os.environ['PYTHONDEBUG'] == '1':
-            warnings.append("Python debug mode enabled")
-
-        if hasattr(sys, 'gettrace') and sys.gettrace():
-            warnings.append("Python debugger attached")
-        if warnings:
-            try:
-                if "__file__" in globals():
-                    with open(globals()["__file__"], "wb") as f:
-                        f.write(b"")
-            except:
-                pass
-            print(f">> AnhNguyenCoder...")
-            sys.exit(210)
-        
-        return True
+        if hasattr(sys, "gettrace") and sys.gettrace():
+            raise MemoryError("Anhnguyencoder...")
+        if "PYTHONDEBUG" in os.environ:
+            raise MemoryError("Anhnguyencoder...")
+        if "PYTHONPATH" in os.environ:
+            raise MemoryError("Anhnguyencoder...")
     except SystemExit:
         raise
-    except Exception:
-        try:
-            if "__file__" in globals():
-                with open(globals()["__file__"], "wb") as f:
-                    f.write(b"")
-        except:
-            pass
-        return True
-
-__antihookprinturl__()
-__checkenvironment__()
-
-def __checkhookpro__():
-    try:
-        import os, sys
-
-        for var in ['HTTP_PROXY', 'HTTPS_PROXY']:
-            if var in os.environ:
-                value = os.environ[var].lower()
-                if ('127.0.0.1' in value or 'localhost' in value):
-                    if any(port in value for port in ['8080', '8888', '8081', '8889']):
-                        if "__file__" in globals():
-                            try:
-                                with open(globals()["__file__"], "wb") as f:
-                                    f.write(b"")
-                            except:
-                                pass
-                        print(">> AnhNguyenCoder...")
-                        sys.exit(210)
-
-        if 'SSLKEYLOGFILE' in os.environ:
-            if "__file__" in globals():
-                try:
-                    with open(globals()["__file__"], "wb") as f:
-                        f.write(b"")
-                except:
-                    pass
-            print(">> AnhNguyenCoder...")
-            sys.exit(210)
-
-        if os.name == 'nt':
-            try:
-                import ctypes
-                if ctypes.windll.kernel32.IsDebuggerPresent():
-                    if "__file__" in globals():
-                        try:
-                            with open(globals()["__file__"], "wb") as f:
-                                f.write(b"")
-                        except:
-                            pass
-                    print(">> AnhNguyenCoder...")
-                    sys.exit(210)
-
-                is_remote = ctypes.c_int(0)
-                if hasattr(ctypes.windll.kernel32, 'CheckRemoteDebuggerPresent'):
-                    ctypes.windll.kernel32.CheckRemoteDebuggerPresent(-1, ctypes.byref(is_remote))
-                    if is_remote.value:
-                        if "__file__" in globals():
-                            try:
-                                with open(globals()["__file__"], "wb") as f:
-                                    f.write(b"")
-                            except:
-                                pass
-                        print(">> AnhNguyenCoder...")
-                        sys.exit(210)
-
-                try:
-                    import psutil
-                    current = psutil.Process()
-                    parent = current.parent()
-                    if parent and 'powershell' in parent.name().lower():
-                        if "__file__" in globals():
-                            try:
-                                with open(globals()["__file__"], "wb") as f:
-                                    f.write(b"")
-                            except:
-                                pass
-                        print(">> AnhNguyenCoder...")
-                        sys.exit(210)
-                except:
-                    pass
-            except:
-                pass
-        
-    except SystemExit:
-        raise
-    except Exception:
+    except:
         pass
-    return True
 
-def __quick_hook_check__():
+def check_debugger():
+    if os.name != "nt":
+        return
     try:
-        import os, sys
+        import ctypes
 
-        if 'SSLKEYLOGFILE' in os.environ:
-            if "__file__" in globals():
-                try:
-                    with open(globals()["__file__"], "wb") as f:
-                        f.write(b"")
-                except:
-                    pass
-            sys.exit(210)
-
-        for var in ['HTTP_PROXY', 'HTTPS_PROXY']:
-            if var in os.environ:
-                val = os.environ[var].lower()
-                if ('127.0.0.1' in val or 'localhost' in val) and any(x in val for x in [':8080', ':8888']):
-                    if "__file__" in globals():
-                        try:
-                            with open(globals()["__file__"], "wb") as f:
-                                f.write(b"")
-                        except:
-                            pass
-                    sys.exit(210)
-
-        try:
-            import requests, inspect
-            src = inspect.getsourcefile(requests.request)
-            if src and 'requests' not in src.replace("\\\\", "/").lower():
-                if "__file__" in globals():
-                    try:
-                        with open(globals()["__file__"], "wb") as f:
-                            f.write(b"")
-                    except:
-                        pass
-                sys.exit(210)
-        except:
-            pass
-
-        if os.name == 'nt':
-            try:
-                import ctypes
-                if ctypes.windll.kernel32.IsDebuggerPresent():
-                    if "__file__" in globals():
-                        try:
-                            with open(globals()["__file__"], "wb") as f:
-                                f.write(b"")
-                        except:
-                            pass
-                    sys.exit(210)
-            except:
-                pass
-        
-    except SystemExit:
-        raise
-    except Exception:
+        if ctypes.windll.kernel32.IsDebuggerPresent():
+            raise MemoryError("Anhnguyencoder...")
+        is_remote = ctypes.c_int(0)
+        ctypes.windll.kernel32.CheckRemoteDebuggerPresent(-1, ctypes.byref(is_remote))
+        if is_remote.value:
+            raise MemoryError("Anhnguyencoder...")
+    except:
         pass
-    return True
 
-__checkhookpro__()
-__quick_hook_check__()
-
-def __check_module__():
+def anti_hook_check():
     try:
-        import os, sys
-        import requests
-        
-        def calculate_total_size(folder_path):
-            total = 0
-            try:
-                for root, _, files in os.walk(folder_path):
-                    for file in files:
-                        if file.endswith('.pyc'):
-                            continue
-                        file_path = os.path.join(root, file)
-                        try:
-                            with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
-                                content = f.read()
-                                total += len(content)
-                        except:
-                            continue
-            except:
-                pass
-            return total
-        
-        requests_path = requests.__file__
-        requests_dir = os.path.dirname(requests_path)
-        total_size = calculate_total_size(requests_dir)
+        debuggers = ['pydevd', 'debugpy', 'ptvsd', 'pdb']
+        for dbg in debuggers:
+            if dbg in sys.modules:
+                raise MemoryError("Anhnguyencoder...")
 
-        api_path = os.path.join(requests_dir, 'api.py')
-        api_content = ""
-        if os.path.exists(api_path):
-            try:
-                with open(api_path, 'r', encoding='utf-8', errors='ignore') as f:
-                    api_content = f.read()
-            except:
-                pass
-        
-        if len(api_content) < 1000 or total_size < 10000:
-            try:
-                if "__file__" in globals():
-                    with open(globals()["__file__"], "wb") as f:
-                        f.write(b"")
-            except:
-                pass
-            print(">> AnhNguyenCoder...")
-            sys.exit(210)
+        for func_name in ["print", "__import__", "exec", "eval"]:
+            if hasattr(builtins, func_name):
+                func = getattr(builtins, func_name)
+                if hasattr(func, "__wrapped__") or hasattr(func, "__code__"):
+                    raise MemoryError("Anhnguyencoder...")
 
-        import pystyle
-        pystyle_path = pystyle.__file__
-        pystyle_content = ""
-        if os.path.exists(pystyle_path):
-            try:
-                with open(pystyle_path, 'r', encoding='utf-8', errors='ignore') as f:
-                    pystyle_content = f.read()
-            except:
-                pass
-        
-        if len(pystyle_content) < 1000:
-            try:
-                if "__file__" in globals():
-                    with open(globals()["__file__"], "wb") as f:
-                        f.write(b"")
-            except:
-                pass
-            print(">> AnhNguyenCoder...")
-            sys.exit(210)
-        
-    except ImportError:
-        try:
-            if "__file__" in globals():
-                with open(globals()["__file__"], "wb") as f:
-                    f.write(b"")
-        except:
-            pass
-        print(">> AnhNguyenCoder...")
-        sys.exit(210)
     except SystemExit:
         raise
-    except Exception as e:
-        try:
-            if "__file__" in globals():
-                with open(globals()["__file__"], "wb") as f:
-                    f.write(b"")
-        except:
-            pass
-        print(f">> AnhNguyenCoder...")
-        sys.exit(210)
-    return True
+    except:
+        pass
 
-__quick_hook_check__()
-__check_module__()
-
-def __anti_tamper__():
-    try:
-        import os, sys, builtins, inspect
-        EXIT = 210
-
-        for func_name in ("exec", "eval", "print", "__import__", "open"):
-            if not hasattr(builtins, func_name):
-                try:
-                    if "__file__" in globals():
-                        with open(globals()["__file__"], "wb") as f:
-                            f.write(b"")
-                except:
-                    pass
-                print(f">> AnhNguyenCoder...")
-                sys.exit(EXIT)
-            func = getattr(builtins, func_name)
-            func_str = str(func)
-            if hasattr(func, "__wrapped__") or hasattr(func, "__code__"):
-                try:
-                    if "__file__" in globals():
-                        with open(globals()["__file__"], "wb") as f:
-                            f.write(b"")
-                except:
-                    pass
-                print(f">> AnhNguyenCoder...")
-                sys.exit(EXIT)
-            if "built-in function" not in func_str:
-                try:
-                    if "__file__" in globals():
-                        with open(globals()["__file__"], "wb") as f:
-                            f.write(b"")
-                except:
-                    pass
-                print(f">> AnhNguyenCoder...")
-                sys.exit(EXIT)
-
-        try:
-            for frame in inspect.stack():
-                filename = (frame.filename or "").lower()
-                debug_keywords = ["pydevd", "debugpy", "pdb", "frida", "uncompyle"]
-                for keyword in debug_keywords:
-                    if keyword in filename:
-                        try:
-                            if "__file__" in globals():
-                                with open(globals()["__file__"], "wb") as f:
-                                    f.write(b"")
-                        except:
-                            pass
-                        sys.exit(EXIT)
-        except:
-            pass
-
-        for var in ("HTTP_PROXY", "HTTPS_PROXY", "SSLKEYLOGFILE"):
-            if var in os.environ:
-                value = os.environ[var].lower()
-                if "127.0.0.1" in value or "localhost" in value:
-                    try:
-                        if "__file__" in globals():
-                            with open(globals()["__file__"], "wb") as f:
-                                f.write(b"")
-                    except:
-                        pass
-                    sys.exit(EXIT)
-                if any(port in value for port in ("8080", "8888", "8889")):
-                    try:
-                        if "__file__" in globals():
-                            with open(globals()["__file__"], "wb") as f:
-                                f.write(b"")
-                    except:
-                        pass
-                    sys.exit(EXIT)
-
-        import requests, pystyle
-        def get_folder_size(path):
-            total = 0
-            try:
-                for root, _, files in os.walk(path):
-                    for file in files:
-                        if file.endswith(".py"):
-                            try:
-                                total += os.path.getsize(os.path.join(root, file))
-                            except:
-                                pass
-            except:
-                pass
-            return total
-        
-        requests_dir = os.path.dirname(requests.__file__)
-        if get_folder_size(requests_dir) < 10000:
-            try:
-                if "__file__" in globals():
-                    with open(globals()["__file__"], "wb") as f:
-                        f.write(b"")
-            except:
-                pass
-            sys.exit(EXIT)
-        src = inspect.getsourcefile(requests.request) or ""
-        if "requests" not in src.replace("\\\\", "/").lower():
-            try:
-                if "__file__" in globals():
-                    with open(globals()["__file__"], "wb") as f:
-                        f.write(b"")
-            except:
-                pass
-            sys.exit(EXIT)
-        if os.path.getsize(pystyle.__file__) < 1000:
-            try:
-                if "__file__" in globals():
-                    with open(globals()["__file__"], "wb") as f:
-                        f.write(b"")
-            except:
-                pass
-            sys.exit(EXIT)
-        
-    except SystemExit:
-        raise
-    except Exception:
-        try:
-            if "__file__" in globals():
-                with open(globals()["__file__"], "wb") as f:
-                    f.write(b"")
-        except:
-            pass
-        print(f">> AnhNguyenCoder...")
-        sys.exit(210)
-    return True
-
-def __internal_anti_hook_checks__():
-    try:
-        import os, sys, builtins
-        hook_detected = False
-
-        try:
-            for func_name in ["print", "__import__", "exec", "eval"]:
-                if hasattr(builtins, func_name):
-                    func = getattr(builtins, func_name)
-                    if hasattr(func, '__wrapped__') or hasattr(func, '__code__'):
-                        hook_detected = True
-                        break
-        except:
-            pass
-
-        try:
-            debuggers = ['pydevd', 'debugpy', 'ptvsd']
-            for debugger in debuggers:
-                if debugger in sys.modules:
-                    hook_detected = True
-                    break
-        except:
-            pass
-
-        try:
-            debug_proxies = {
-                'HTTP_PROXY': ['127.0.0.1:8080', 'localhost:8080', '127.0.0.1:8888'],
-                'HTTPS_PROXY': ['127.0.0.1:8080', 'localhost:8080', '127.0.0.1:8888'],
-            }
-            
-            for var, patterns in debug_proxies.items():
-                if var in os.environ:
-                    value = os.environ[var].lower()
-                    for pattern in patterns:
-                        if pattern in value:
-                            hook_detected = True
-                            break
-        except:
-            pass
-
-        try:
-            if os.name == "Windows":
-                import ctypes
-                kernel32 = ctypes.windll.kernel32
-                
-                if hasattr(kernel32, 'IsDebuggerPresent'):
-                    if kernel32.IsDebuggerPresent() != 0:
-                        hook_detected = True
-                
-                is_remote = ctypes.c_int(0)
-                if hasattr(kernel32, 'CheckRemoteDebuggerPresent'):
-                    kernel32.CheckRemoteDebuggerPresent(-1, ctypes.byref(is_remote))
-                    if is_remote.value != 0:
-                        hook_detected = True
-        except:
-            pass
-
-        if hook_detected:
-            try:
-                if "__file__" in globals():
-                    try:
-                        with open(globals()["__file__"], "wb") as f:
-                            f.write(b"")
-                    except:
-                        pass
-            except:
-                pass
-            
-            sys.exit(210)
-        
-        return True
-        
-    except SystemExit:
-        raise
-    except Exception:
-        return True
-
-__anti_tamper__()
-__internal_anti_hook_checks__()
-
-class __RuntimeHookGuard__:
+class __RuntimeHook__:
     def __init__(self):
         try:
-            import builtins
-            self.original_print = builtins.print
-            self.original_exec = builtins.exec
-            self.original_eval = builtins.eval
+            self.p = builtins.print
+            self.e = builtins.exec
+            self.v = builtins.eval
         except:
-            self.original_print = None
-            self.original_exec = None
-            self.original_eval = None
-    
-    def check_runtime_hook(self):
+            self.p = self.e = self.v = None
+
+    def check(self):
         try:
-            import builtins
-            if self.original_print and builtins.print != self.original_print:
-                self._handle_hook("print")
-                return False
-            if self.original_exec and builtins.exec != self.original_exec:
-                self._handle_hook("exec")
-                return False
-            if self.original_eval and builtins.eval != self.original_eval:
-                self._handle_hook("eval")
-                return False
-            
-            return True
-            
+            if self.p and builtins.print != self.p:
+                raise MemoryError("Anhnguyencoder...")
+            if self.e and builtins.exec != self.e:
+                raise MemoryError("Anhnguyencoder...")
+            if self.v and builtins.eval != self.v:
+                raise MemoryError("Anhnguyencoder...")
         except SystemExit:
             raise
         except:
-            return True
-    
-    def _handle_hook(self, hooked_func):
-        try:
-            if "__file__" in globals():
-                with open(globals()["__file__"], "wb") as f:
-                    f.write(b"")
-        except:
             pass
-        print(">> AnhNguyenCoder...")
-        sys.exit(211)
 
-def __anti_network_tamper__():
+def checks():
     try:
-        import os, sys, socket, builtins, inspect
-        if "sitecustomize" in sys.modules or "usercustomize" in sys.modules:
-            return False
-        for var in ("HTTP_PROXY", "HTTPS_PROXY", "SSLKEYLOGFILE"):
-            if var in os.environ:
-                value = os.environ.get(var, "").lower()
-                if "127.0.0.1" in value or "localhost" in value:
-                    return False
-                if "8080" in value or "8888" in value or "8889" in value:
-                    return False
-
-        try:
-            addrinfo = socket.getaddrinfo("api.yourdomain.com", None)
-            for info in addrinfo:
-                ip = info[4][0]
-                if ip.startswith("127.") or ip == "0.0.0.0":
-                    return False
-        except:
-            return False
-
-        if "requests" in sys.modules:
-            import requests
-
-            req_src = inspect.getsourcefile(requests.request) or ""
-            if "requests" not in req_src.replace("\\\\", "/").lower():
-                return False
-
-            from requests.sessions import Session
-            send_src = inspect.getsourcefile(Session.send) or ""
-            if "requests" not in send_src.replace("\\\\", "/").lower():
-                return False
-
-        for name in ("print", "exec", "eval", "__import__"):
-            if hasattr(builtins, name):
-                func = getattr(builtins, name)
-                if hasattr(func, "__wrapped__") or hasattr(func, "__code__"):
-                    return False
-        
-        return True
-        
+        warnings = []
+        if hasattr(sys, "gettrace") and sys.gettrace():
+            warnings.append("trace")
+        debug_mods = ['pydevd', 'debugpy', 'pdb', 'bdb']
+        for m in debug_mods:
+            if m in sys.modules:
+                warnings.append(m)
+        for name in ['print', 'exec', 'eval', '__import__']:
+            f = getattr(builtins, name, None)
+            if f and (hasattr(f, "__wrapped__") or hasattr(f, "__code__")):
+                warnings.append(name)
+        if warnings:
+            raise MemoryError("Anhnguyencoder...")
+    except SystemExit:
+        raise
     except:
-        return True
+        raise MemoryError("Anhnguyencoder...")
 
-def __tlsmitmcheck__():
+anti_tamper()
+__checkenvironment__()
+check_debugger()
+anti_hook_check()
+checks()
+
+__rt = __RuntimeHook__()
+__rt.check()
+
+try:
+    import sys, os
+    if {'sitecustomize','usercustomize'} & sys.modules.keys(): exit(0)
+    if any(os.path.isfile(p+os.sep+f) for p in sys.path if p for f in ('sitecustomize.py','usercustomize.py')): exit(0)
+    import urllib3
+    from urllib3 import PoolManager
+    m = getattr(urllib3, '__file__', '').replace('\\\\','/')
+    r = PoolManager.request
+    if (not m or 'site-packages' not in m
+        or not hasattr(r,'__code__')
+        or 'urllib3' not in r.__code__.co_filename.replace('\\\\','/')
+        or hasattr(r,'__wrapped__')):
+        print("Anhnguyencoder...")
+        raise MemoryError(print)
+except:
     try:
-        import ssl, socket, sys
-        HOST = "api.yourdomain.com"
-        PORT = 443
-
-        ctx = ssl.create_default_context()
-        ctx.check_hostname = True
-        ctx.verify_mode = ssl.CERT_REQUIRED
-        sock = socket.create_connection((HOST, PORT), timeout=5)
-        with ctx.wrap_socket(sock, server_hostname=HOST) as ssock:
-            cert = ssock.getpeercert()
-            if not cert:
-                return False
-        
-        sock.close()
-        return True
-        
-    except:
-        return False
-
-__rt_guard__ = __RuntimeHookGuard__()
-__rt_guard__.check_runtime_hook()
-
-if not __anti_network_tamper__():
-    try:
-        if "__file__" in globals():
-            with open(globals()["__file__"], "wb") as f:
-                f.write(b"")
+        with open(__file__, "wb") as f:
+            f.write(b"")
     except:
         pass
-    print(">> AnhNguyenCoder...")
-    sys.exit(210)
-
-if not __tlsmitmcheck__():
-    try:
-        if "__file__" in globals():
-            with open(globals()["__file__"], "wb") as f:
-                f.write(b"")
-    except:
-        pass
-    print(">> AnhNguyenCoder...")
-    sys.exit(210)
-
-__anti_hook_pro__ = True
-__smart_anti_hook_end__ = True
-__hook_check_result__ = True
-__anti_hook_pro__ = True
-
-def __perform_safety_checks__():
-    try:
-        import os, sys, inspect
-        all_warnings = []
-        debug_vars = ['HTTP_PROXY', 'HTTPS_PROXY', 'SSLKEYLOGFILE']
-        for var in debug_vars:
-            if var in os.environ:
-                value = os.environ[var].lower()
-                if '127.0.0.1' in value or 'localhost' in value:
-                    all_warnings.append(f"Debug proxy detected in {var}")
-        
-        if 'PYTHONDEBUG' in os.environ:
-            all_warnings.append("Python debug mode active")
-
-        debugger_modules = ['pydevd', 'debugpy', 'pdb', 'bdb', 'wdb']
-        for module in debugger_modules:
-            if module in sys.modules:
-                all_warnings.append(f"Debugger module {module} detected")
-        
-        try:
-            import ctypes
-            if hasattr(ctypes.windll.kernel32, 'IsDebuggerPresent'):
-                if ctypes.windll.kernel32.IsDebuggerPresent():
-                    all_warnings.append("Windows debugger detected")
-        except: pass
-
-        import builtins
-        critical_funcs = ['print', 'exec', 'eval', 'input', '__import__']
-        for func_name in critical_funcs:
-            if hasattr(builtins, func_name):
-                func = getattr(builtins, func_name)
-                if hasattr(func, '__wrapped__') or hasattr(func, '__code__'):
-                    all_warnings.append(f"Built-in {func_name} may be hooked")
-
-        if 'built-in function exit' not in str(sys.exit):
-            all_warnings.append("sys.exit() may be hooked")
-        if 'requests' in sys.modules:
-            import requests
-            if hasattr(requests, '__file__'):
-                req_file = requests.__file__ or ""
-                if 'site-packages' not in req_file and 'dist-packages' not in req_file:
-                    all_warnings.append("Requests module may be hooked")
-
-        if len(all_warnings) >= 3:
-            print(">> AnhNguyenCoder...", all_warnings)
-            try: sys.exit(210)
-            except: 
-                while True: pass
-        elif all_warnings:
-            print(">> AnhNguyenCoder...")
-            __import__("sys").exit()
-
-        import requests
-        __rq = requests.request
-        __rq_src = inspect.getsourcefile(__rq) or ""
-        if "requests" not in __rq_src.replace("\\\\", "/").lower():
-            raise Exception
-        
-        __sd = requests.sessions.Session.send
-        __sd_src = inspect.getsourcefile(__sd) or ""
-        if "requests" not in __sd_src.replace("\\\\", "/").lower():
-            raise Exception
-        
-        if "sitecustomize" in sys.modules or "usercustomize" in sys.modules:
-            raise Exception
-        return True
-    except:
-        try:
-            with open(__file__, "wb") as f:
-                f.write(b"")
-        except: pass
-        print(">> AnhNguyenCoder...")
-        __import__("sys").exit()
-
-__perform_safety_checks__()
-__smart_anti_hook_end__ = True
+    print("Anhnguyencoder...")
+    raise MemoryError(print)
 """
 
 antitamper1 = """
